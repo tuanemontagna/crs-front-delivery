@@ -17,7 +17,9 @@ export default function TabelaCrud({items, headers, onEdit, onDelete, acoes}) {
         {items.map((cargo, i) => (
           <Table.Row key={i}>
             <Table.Cell>{cargo.id}</Table.Cell>
-            <Table.Cell>{cargo.descricao}</Table.Cell>
+            {headers.map((header, i) => (
+              <Table.Cell key={i} textAlign="center">{cargo[header.value]}</Table.Cell>
+            ))}
             <Table.Cell textAlign="center">
               {acoes && (<Stack direction="row">
                 <Tooltip content="Editar">

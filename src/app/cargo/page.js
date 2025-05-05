@@ -37,7 +37,10 @@ export default function Tasks() {
       const response = await api.get('/cargo')
       setTasks(response.data.data);
     } catch (error) {
-      
+      toaster.create({
+        title: 'Erro ao buscar cargos',
+        type: 'error'
+      });
     }
   }
 
@@ -49,43 +52,56 @@ export default function Tasks() {
   const indexPrimeiroItem = indexUltimoItem - itemsPerPage;
   const tasksAtuais = filteredTasks.slice(indexPrimeiroItem, indexUltimoItem)
 
-const criarTask = async() => {
+  const criarTask = async () => {
     try {
-        if (!input.trim()) return;
-        setLoadingSave(true);
-            if (editingIndex !== null) {
-                const taskEditar = tasks[editingIndex];
-                await api.patch(`/cargo/${taskEditar.id}`, {
-                    descricao: input
-            });
+      if (!input.trim()) return;
+      setLoadingSave(true);
 
-            toaster.create({
-                title: 'Cargo editado com sucesso',
-                type: 'sucess'
-            });
+      await api.post('/cargo', {
+        descricao: input,
+      });
 
-            await buscarCargo();
-            setInput('');
-            setIsOpen(false);
-        } else {
-            const response = await api.post('/cargo', {
-                descricao: input,
-            });
-            toaster.create({
-                title: 'Cargo criado com sucesso',
-                type: 'sucess'
-            });
-            await buscarCargo();
-        }
-        setLoadingSave(false);
-        setInput('');
+      toaster.create({
+        title: 'Cargo criado com sucesso',
+        type: 'sucess'
+      });
+
+      await buscarCargo();
+      setInput('');
+      setIsOpen(false);
     } catch (error) {
-        toaster.create({
-            title: 'erro ao criar cargo',
-            type: 'error'
-        });
-        setLoadingSave(false);
-    }
+      toaster.create({
+        title: 'Erro ao criar cargo',
+        type: 'error'
+      });
+    } 
+  }
+
+  const salvarEdicao = async () => {
+    try {
+      if (!input.trim() || editingIndex === null) return;
+      setLoadingSave(true);
+
+      const taskEditar = tasks[editingIndex];
+      await api.patch(`/cargo/${taskEditar.id}`, {
+        descricao: input
+      });
+
+      toaster.create({
+        title: 'Cargo editado com sucesso',
+        type: 'sucess'
+      });
+
+      await buscarCargo();
+      setEditingIndex(null);
+      setInput('');
+      setIsOpen(false);
+    } catch (error) {
+      toaster.create({
+        title: 'Erro ao editar cargo',
+        type: 'error'
+      });
+    } 
   }
 
   const editarTask = async (index) => {
@@ -97,29 +113,28 @@ const criarTask = async() => {
 
   const excluirTask = async (index, id) => {
     try {
-        if(confirm('Você tem certeza que deseja excluir este cargo?')) {
-            const taskDeletar = tasksAtuais[index];
-            const taskExcluido = tasks.filter(task => task !== taskDeletar);
-            if (tasksAtuais.length === 1 && currentPage > 1) {
-                setCurrentPage(currentPage - 1);
-            }
-
-            const response = await api.delete(`/cargo/${id}`);
-
-            toaster.create({
-            title: 'Cargo excluído com sucesso',
-            type: 'sucess'
-            });
-        
-            setLoadingSave(true);
-            await buscarCargo();
+      if (confirm('Você tem certeza que deseja excluir este cargo?')) {
+        const taskDeletar = tasksAtuais[index];
+        if (tasksAtuais.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
         }
-    } catch (error) {
+
+        await api.delete(`/cargo/${id}`);
+
         toaster.create({
-            title: 'erro ao excluir cargo',
-            type: 'error'
+          title: 'Cargo excluído com sucesso',
+          type: 'sucess'
         });
-        setLoadingSave(false);
+
+        setLoadingSave(true);
+        await buscarCargo();
+      }
+    } catch (error) {
+      toaster.create({
+        title: 'Erro ao excluir cargo',
+        type: 'error'
+      });
+      setLoadingSave(false);
     }
   }
 
@@ -128,44 +143,44 @@ const criarTask = async() => {
       <Heading mb={4}> Cargos </Heading>
       <Flex mb={4} gap={4} align="center">
         <InputPesquisa
-            searchTerm={searchTerm}
-            SetSeachTerm={setSearchTerm}
+          searchTerm={searchTerm}
+          SetSeachTerm={setSearchTerm}
         />
         <InputCreate
-            input={input}
-            setInput={setInput}
-            submit={criarTask}
-            editingIndex={editingIndex}
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            loadingSave={loadingSave}
+          input={input}
+          setInput={setInput}
+          submit={{ criarTask, salvarEdicao }}
+          editingIndex={editingIndex}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          loadingSave={loadingSave}
         />
       </Flex>
-      <Stack style={{display: 'flex', alignItems: 'center'}}>
+      <Stack style={{ display: 'flex', alignItems: 'center' }}>
         <TabelaCrud
           items={tasksAtuais}
           onEdit={editarTask}
           onDelete={excluirTask}
           acoes={true}
           headers={[
-            'ID',
-            'Descrição'
+            {name: 'ID', value: 'id'},
+            {name: 'Descrição', value: 'descricao'},
           ]}
         />
         <Flex>
-            <PaginationTabela
+          <PaginationTabela
             items={filteredTasks.length}
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-            />
-            <SelecionarQuantidade
+          />
+          <SelecionarQuantidade
             itemsPerPage={itemsPerPage}
             setItemsPerPage={(quantidade) => {
-                setItemsPerPage(quantidade);
-                setCurrentPage(1); 
+              setItemsPerPage(quantidade);
+              setCurrentPage(1);
             }}
-            />
+          />
         </Flex>
       </Stack>
     </Box>
