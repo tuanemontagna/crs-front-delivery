@@ -24,6 +24,7 @@ export default function Tasks() {
   const filteredTasks = tasks.filter(task =>
     task.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -84,8 +85,8 @@ export default function Tasks() {
           onDelete={excluirTask}
           acoes={true}
           headers={[
-            'ID',
-            'Descrição'
+            'Tarefa',
+            'Ações'
           ]}
         />
         <Flex>

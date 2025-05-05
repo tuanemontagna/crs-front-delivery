@@ -1,7 +1,7 @@
 import { CloseButton, Dialog, Portal, Input, Button } from "@chakra-ui/react"
 import { MdAdd } from 'react-icons/md'
 
-export default function InputCreate({ input, setInput, submit, editingIndex, isOpen, setIsOpen }) {
+export default function InputCreate({ input, setInput, submit, editingIndex, isOpen, setIsOpen, loadingSave }) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger asChild>
@@ -17,6 +17,14 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
               <Dialog.Title>
                 {editingIndex !== null ? "Editando tarefa" : "Cadastrando nova tarefa"}
               </Dialog.Title>
+                <button style={{ display: 'none' }} positio />
+                <CloseButton 
+                  size="sm" 
+                  onClick={() => setIsOpen(false)}
+                  position="absolute" 
+                  top="1rem" 
+                  right="1rem"
+                />
             </Dialog.Header>
             <Dialog.Body>
               <Input
@@ -27,6 +35,7 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
             </Dialog.Body>
             <Dialog.Footer>
             <Button
+              loading={loadingSave}
               color="white"
               background="green"
               variant="outline"
@@ -38,12 +47,6 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
             >
               {editingIndex !== null ? "Salvar edição" : "Criar nova tarefa"}
             </Button>
-              <Dialog.CloseTrigger asChild>
-                <button style={{ display: 'none' }} />
-              </Dialog.CloseTrigger>
-              <Dialog.CloseTrigger asChild>
-                <CloseButton size="sm" onClick={() => setIsOpen(false)}/>
-              </Dialog.CloseTrigger>
             </Dialog.Footer>
           </Dialog.Content>
         </Dialog.Positioner>
