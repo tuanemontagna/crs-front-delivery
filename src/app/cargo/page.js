@@ -1,6 +1,6 @@
 'use client';
 import InputPesquisa from "@/components/InputPesquisa";
-import InputCreate from "@/components/InputCreate";
+import DialogCargo from "@/components/DialogCargo";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
 import SelecionarQuantidade from "@/components/SelecionarQuantidade";
@@ -146,7 +146,7 @@ export default function Tasks() {
           searchTerm={searchTerm}
           SetSeachTerm={setSearchTerm}
         />
-        <InputCreate
+        <DialogCargo
           input={input}
           setInput={setInput}
           submit={{ criarTask, salvarEdicao }}

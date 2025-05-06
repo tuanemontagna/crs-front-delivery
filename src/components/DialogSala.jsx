@@ -1,7 +1,7 @@
-import { CloseButton, Dialog, Portal, Input, Button } from "@chakra-ui/react"
+import { CloseButton, Dialog, Portal, Input, Button, Stack, Box, Text } from "@chakra-ui/react"
 import { MdAdd } from 'react-icons/md'
 
-export default function InputCreate({ input, setInput, submit, editingIndex, isOpen, setIsOpen, loadingSave }) {
+export default function DialogSala({ idPadraoLugar, setIdPadraoLugar, observacao, setObservacao, submit, editingIndex, isOpen, setIsOpen, loadingSave }) {
   return (
     <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
       <Dialog.Trigger asChild>
@@ -15,7 +15,7 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
           <Dialog.Content>
             <Dialog.Header>
               <Dialog.Title>
-                {editingIndex !== null ? "Editando tarefa" : "Cadastrando nova tarefa"}
+                {editingIndex !== null ? "Editando " : "Cadastrando "}
               </Dialog.Title>
               <CloseButton 
                 size="sm" 
@@ -26,11 +26,24 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
               />
             </Dialog.Header>
             <Dialog.Body>
-              <Input
-                placeholder="Digite a tarefa"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-              />
+              <Stack spacing={4}>
+                <Box>
+                    <Text fontWeight="medium" mb={1}>ID Padrão de Lugares</Text>
+                    <Input
+                    placeholder="id padrão lugares"
+                    value={idPadraoLugar}
+                    onChange={(e) => setIdPadraoLugar(e.target.value)}
+                    />
+                </Box>
+                <Box>
+                    <Text fontWeight="medium" mb={1}>Observação</Text>
+                    <Input
+                    placeholder="tipo da sala"
+                    value={observacao}
+                    onChange={(e) => setObservacao(e.target.value)}
+                    />
+                </Box>
+              </Stack>
             </Dialog.Body>
             <Dialog.Footer>
               <Button
@@ -43,7 +56,7 @@ export default function InputCreate({ input, setInput, submit, editingIndex, isO
                   editingIndex !== null ? submit.salvarEdicao() : submit.criarTask();
                 }}
               >
-                {editingIndex !== null ? "Salvar edição" : "Criar nova tarefa"}
+                {editingIndex !== null ? "Salvar edição" : "Criar "}
               </Button>
             </Dialog.Footer>
           </Dialog.Content>

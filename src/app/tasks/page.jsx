@@ -1,6 +1,6 @@
 'use client';
 import InputPesquisa from "@/components/InputPesquisa";
-import InputCreate from "@/components/InputCreate";
+import InputCreate from "@/components/DialogCreate";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
 import SelecionarQuantidade from "@/components/SelecionarQuantidade";
