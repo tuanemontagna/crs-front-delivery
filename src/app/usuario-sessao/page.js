@@ -1,11 +1,9 @@
 'use client';
 import InputPesquisa from "@/components/InputPesquisa";
-import DialogCargo from "@/components/DialogCargo";
+import DialogUsuarioSessao from "@/components/DialogUsuarioSessao";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
 import SelecionarQuantidade from "@/components/SelecionarQuantidade";
-import verificarToken from "@/middleware/verificarToken";
-import { useRouter } from 'next/navigation';
 import { 
   Box,
   Heading,
@@ -18,72 +16,75 @@ import api from "@/utils/axios";
 
 export default function Tasks() {
   const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
-  const router = useRouter();
-
+  const [informacoes, setInformacoes] = useState({
+    idUsuario: '',
+    idSessao: '',
+    valor: '',
+    status: ''
+  });
+  
   useEffect(() => {
-    const validarToken = async () => {
-      const valido = await verificarToken();
-      if (!valido) {
-        router.push('/');
-      } else {
-        await buscarCargo();
-      }
-    };
-
-    validarToken();
-  }, []);
-
-  const filteredTasks = tasks.filter(task =>
-    task.descricao.includes(searchTerm.toLowerCase())
-  );
-
-  const buscarCargo = async () => {
-    try {
-      const response = await api.get('/cargo')
-      setTasks(response.data.data);
-    } catch (error) {
-      toaster.create({
-        title: 'Erro ao buscar cargos',
-        type: 'error'
-      });
+      buscarUsuarioSessao();
+    }, [])
+    
+    const filteredTasks = tasks.filter(task =>
+        task.valor.includes(searchTerm.toLowerCase())
+    );
+    
+    const buscarUsuarioSessao = async () => {
+        try {
+            const response = await api.get('/usuario-sessao')
+            setTasks(response.data.data);
+        } catch (error) {
+            toaster.create({
+                title: 'Erro ao buscar usuarios sessoes',
+                type: 'error'
+            });
+        }
     }
-  }
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm]);
-
+    
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+    
   const indexUltimoItem = currentPage * itemsPerPage;
   const indexPrimeiroItem = indexUltimoItem - itemsPerPage;
   const tasksAtuais = filteredTasks.slice(indexPrimeiroItem, indexUltimoItem)
-
+  
   const criarTask = async () => {
     try {
-      if (!input.trim()) return;
+      if (!informacoes.valor.trim()) return;
       setLoadingSave(true);
 
-      await api.post('/cargo', {
-        descricao: input,
+      await api.post('/usuario-sessao', {
+        idUsuario: informacoes.idUsuario,
+        idSessao: informacoes.idSessao,
+        valor: informacoes.valor,
+        status: informacoes.status
       });
 
       toaster.create({
-        title: 'Cargo criado com sucesso',
+        title: 'Usuário criado com sucesso',
         type: 'sucess'
       });
 
-      await buscarCargo();
-      setInput('');
+      await buscarUsuarioSessao();
+      setInformacoes({
+        idUsuario: '',
+        idSessao: '',
+        valor: '',
+        status: ''
+      });
       setIsOpen(false);
     } catch (error) {
       toaster.create({
-        title: 'Erro ao criar cargo',
+        title: 'Erro ao criar usuario sessao',
         type: 'error'
       });
     } 
@@ -91,26 +92,34 @@ export default function Tasks() {
 
   const salvarEdicao = async () => {
     try {
-      if (!input.trim() || editingIndex === null) return;
+      if (!informacoes.valor.trim() || editingIndex === null) return;
       setLoadingSave(true);
 
       const taskEditar = tasks[editingIndex];
-      await api.patch(`/cargo/${taskEditar.id}`, {
-        descricao: input
+      await api.patch(`/usuario/${taskEditar.id}`, {
+        idUsuario: informacoes.idUsuario,
+        idSessao: informacoes.idSessao,        idSessao: informacoes.idSessao,
+        valor: informacoes.valor,
+        status: informacoes.status
       });
 
       toaster.create({
-        title: 'Cargo editado com sucesso',
+        title: 'Usuário editado com sucesso',
         type: 'sucess'
       });
 
-      await buscarCargo();
+      await buscarUsuarioSessao();
       setEditingIndex(null);
-      setInput('');
+      setInformacoes({
+        idUsuario: '',
+        idSessao: '',
+        valor: '',
+        status: ''
+      });
       setIsOpen(false);
     } catch (error) {
       toaster.create({
-        title: 'Erro ao editar cargo',
+        title: 'Erro ao editar usuario',
         type: 'error'
       });
     } 
@@ -118,32 +127,37 @@ export default function Tasks() {
 
   const editarTask = async (index) => {
     const taskEditar = tasksAtuais[index];
-    setInput(taskEditar.descricao);
+    setInformacoes({
+        idUsuario: informacoes.idUsuario,
+        idSessao: informacoes.idSessao,
+        valor: informacoes.valor,
+        status: informacoes.status
+    });
     setEditingIndex(tasks.indexOf(taskEditar));
     setIsOpen(true);
   };
 
   const excluirTask = async (index, id) => {
     try {
-      if (confirm('Você tem certeza que deseja excluir este cargo?')) {
+      if (confirm('Você tem certeza que deseja excluir este usuario?')) {
         const taskDeletar = tasksAtuais[index];
         if (tasksAtuais.length === 1 && currentPage > 1) {
           setCurrentPage(currentPage - 1);
         }
 
-        await api.delete(`/cargo/${id}`);
+        await api.delete(`/usuario-sessao/${id}`);
 
         toaster.create({
-          title: 'Cargo excluído com sucesso',
+          title: 'Usuário sessão excluído com sucesso',
           type: 'sucess'
         });
 
         setLoadingSave(true);
-        await buscarCargo();
+        await buscarUsuarioSessao();
       }
     } catch (error) {
       toaster.create({
-        title: 'Erro ao excluir cargo',
+        title: 'Erro ao excluir usuario sessao',
         type: 'error'
       });
       setLoadingSave(false);
@@ -152,15 +166,15 @@ export default function Tasks() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}> Cargos </Heading>
+      <Heading mb={4}> Usuário Sessão </Heading>
       <Flex mb={4} gap={4} align="center">
         <InputPesquisa
           searchTerm={searchTerm}
           SetSeachTerm={setSearchTerm}
         />
-        <DialogCargo
-          input={input}
-          setInput={setInput}
+        <DialogUsuarioSessao
+          informacoes={informacoes}
+          setInformacoes={setInformacoes}
           submit={{ criarTask, salvarEdicao }}
           editingIndex={editingIndex}
           isOpen={isOpen}
@@ -176,7 +190,10 @@ export default function Tasks() {
           acoes={true}
           headers={[
             {name: 'ID', value: 'id'},
-            {name: 'Descrição', value: 'descricao'},
+            {name: 'ID Usuário', value: 'idUsuario'},
+            {name: 'ID Sessão', value: 'idSessao'},
+            {name: 'Valor', value: 'valor'},
+            {name: 'Status', value: 'status'},
           ]}
         />
         <Flex>
@@ -185,7 +202,7 @@ export default function Tasks() {
             itemsPerPage={itemsPerPage}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
-          />
+          /> 
           <SelecionarQuantidade
             itemsPerPage={itemsPerPage}
             setItemsPerPage={(quantidade) => {

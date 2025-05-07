@@ -63,9 +63,17 @@ export default function DialogFilme({informacoes, setInformacoes, submit, editin
                 <Box>
                   <Text fontWeight="medium" mb={1}>Cartaz</Text>
                     <FileUpload.Root>
-                      <FileUpload.HiddenInput
-                        onChange={(e) => setInformacoes({ ...informacoes, cartaz: e.target.files[0] })}
-                      />
+                    <FileUpload.HiddenInput
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setInformacoes({ ...informacoes, cartaz: file });
+                        }
+                      }}                      
+                    />
+
                       <FileUpload.Trigger asChild>
                         <Button variant="outline" size="sm">
                           <HiUpload /> Upload file
@@ -85,6 +93,7 @@ export default function DialogFilme({informacoes, setInformacoes, submit, editin
                 size="sm"
                 onClick={() => {
                   editingIndex !== null ? submit.salvarEdicao() : submit.criarTask();
+                  console.log("Arquivos selecionados:", informacoes.cartaz);
                 }}
               >
                 {editingIndex !== null ? "Salvar edição" : "Criar"}

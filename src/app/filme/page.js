@@ -12,7 +12,6 @@ import SelecionarQuantidade from "@/components/SelecionarQuantidade";
 
 export default function FilmePage() {
   const [tasks, setTasks] = useState([]);
-  const [input, setInput] = useState('');
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [currentPage, setCurrentPage] = useState(1);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -24,7 +23,7 @@ export default function FilmePage() {
     descricao: '',
     autor: '',
     duracao: '',
-    cartaz: ''
+    cartaz: []
   });
 
   const buscarFilme = async () => {
@@ -38,122 +37,84 @@ export default function FilmePage() {
       });
     }
   };
-
-  const uploadFile = async (files) => {
-
-    const uploadedData = [];
-  
-    const uploadPromises = files.map(async (fileData) => {
-      const { file } = fileData;
-  
-      if (!file) {
-        return;
-      }
-  
-      const formData = new FormData();
-      const fileBuffer = await file.arrayBuffer();
-      const cleanFile = new File([fileBuffer], file.name.replace(/\s/g, '_'), {
-        type: file.type,
-        lastModified: file.lastModified,
-      });
-  
-      formData.append('file', cleanFile, cleanFile.name);
-  
-      try {
-        const response = await axios.post("/upload/cartaz", formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-          transformRequest: (data) => data,
-        });
-  
-        uploadedData.push({
-          fileName: cleanFile.name,
-          fileType: cleanFile.type,
-          fileSize: cleanFile.size,
-          url: response.data.path, 
-        });
-  
-      } catch (error) {
-        console.error("Upload failed:", error);
-        toaster.create({
-          title: `Failed to upload ${file.name}`,
-          type: "error",
-        });
-      }
-    });
-  
-    await Promise.all(uploadPromises);
-  
-    return uploadedData;
-  };
   
   const criarTask = async () => {
     try {
       const { nome, descricao, autor, duracao, cartaz } = informacoes;
   
       if (!nome?.trim() || !descricao?.trim() || !autor?.trim() || !duracao?.trim()) return;
+  
       setLoadingSave(true);
-      
-      let cartazUrl = '';
-      if (cartaz && cartaz.length > 0) {
-        const uploadedFiles = await uploadFile(cartaz);
-        cartazUrl = uploadedFiles[0]?.url; 
+  
+      const formData = new FormData();
+      formData.append("nome", nome);
+      formData.append("descricao", descricao);
+      formData.append("autor", autor);
+      formData.append("duracao", duracao);
+  
+      if (cartaz) {
+        formData.append("cartaz", cartaz); 
       }
   
-      const response = await api.post('/filme', {
-        nome,         
-        descricao,
-        autor,
-        duracao: parseInt(duracao, 10),
-        cartaz: cartazUrl, 
+      await api.post("/filme", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
       });
   
       toaster.create({
-        title: 'Filme cadastrado com sucesso',
-        type: 'success',
+        title: "Filme cadastrado com sucesso",
+        type: "success",
       });
+  
       await buscarFilme();
       resetForm();
     } catch (error) {
       toaster.create({
-        title: 'Erro ao cadastrar filme',
-        type: 'error',
+        title: "Erro ao cadastrar filme",
+        type: "error",
       });
-    }
+    } 
   };
+  
+  
   
   const salvarEdicao = async () => {
     try {
       if (!informacoes.nome?.trim() || editingIndex === null) return;
       setLoadingSave(true);
+  
       const taskEditar = tasks[editingIndex];
   
-      let cartazUrl = taskEditar.cartaz;
-      if (cartaz && cartaz.length > 0) {
-        const uploadedFiles = await uploadFile(cartaz);
-        cartazUrl = uploadedFiles[0]?.url; 
+      const formData = new FormData();
+      formData.append('nome', informacoes.nome);
+      formData.append('descricao', informacoes.descricao);
+      formData.append('autor', informacoes.autor);
+      formData.append('duracao', informacoes.duracao);
+      if (informacoes.cartaz) {
+        formData.append("cartaz", informacoes.cartaz);
       }
   
-      await api.patch(`/filme/${taskEditar.id}`, {
-        nome: informacoes.nome,
-        descricao: informacoes.descricao,
-        autor: informacoes.autor,
-        duracao: parseInt(informacoes.duracao, 10),
-        cartaz: cartazUrl, 
+      await api.patch(`/filme/${taskEditar.id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
   
       toaster.create({
         title: 'Filme editado com sucesso',
         type: 'success',
       });
+  
       await buscarFilme();
       resetForm();
     } catch (error) {
+      console.error(error);
       toaster.create({
         title: 'Erro ao editar filme',
         type: 'error',
       });
-    }
+    } 
   };
+  
 
   const excluirTask = async (index, id) => {
     try {
@@ -198,7 +159,7 @@ export default function FilmePage() {
       descricao: '',
       autor: '',
       duracao: '',
-      cartaz: ''
+      cartaz: []
     });
     setEditingIndex(null);
     setIsOpen(false);
