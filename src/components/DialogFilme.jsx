@@ -1,4 +1,4 @@
-import { CloseButton, Dialog, Portal, Input, Button, Stack, Box, Text, FileUpload } from "@chakra-ui/react";
+import { CloseButton, Dialog, Portal, Input, Button, Stack, Box, Text, FileUpload, Image } from "@chakra-ui/react";
 import { HiUpload } from "react-icons/hi"
 import { MdAdd } from 'react-icons/md';
 
@@ -81,6 +81,15 @@ export default function DialogFilme({informacoes, setInformacoes, submit, editin
                       </FileUpload.Trigger>
                       <FileUpload.List />
                     </FileUpload.Root>
+                    {typeof informacoes.cartaz === 'string' && (
+                      <Image
+                        src={`http://localhost:3333/${informacoes.cartaz}`}
+                        alt="Cartaz do filme"
+                        mt={2}
+                        maxH="150px"
+                        borderRadius="md"
+                      />
+                    )}
                 </Box>
               </Stack>
             </Dialog.Body>

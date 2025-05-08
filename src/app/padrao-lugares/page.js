@@ -4,7 +4,7 @@ import { Box, Heading, Stack, Flex } from "@chakra-ui/react";
 import { toaster } from "@/components/ui/toaster";
 import api from "@/utils/axios";
 import InputPesquisa from "@/components/InputPesquisa";
-import DialogFilme from "@/components/DialogFilme";
+import DialogPadraoLugares from "@/components/DialogPadraoLugares";
 import TabelaCrud from "@/components/TabelaCrud";
 import PaginationTabela from "@/components/PaginationTabela";
 import SelecionarQuantidade from "@/components/SelecionarQuantidade";
@@ -18,102 +18,97 @@ export default function FilmePage() {
   const [isOpen, setIsOpen] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
   const [informacoes, setInformacoes] = useState({
-    nome: '',
-    descricao: '',
-    autor: '',
-    duracao: '',
-    cartaz: []
+    lugares: []
   });
 
-  const buscarFilme = async () => {
+  const buscarPadraoLugares = async () => {
     try {
-      const response = await api.get('/filme');
-      setTasks(response.data.data);
+        const response = await api.get('/padrao-lugar');
+
+        console.log("API Response:", response.data.data);
+
+        // Extrai e combina todos os arrays "lugares" de cada objeto
+        const allLugares = response.data.data.flatMap(item =>
+            item.lugares.map(lugar => ({
+              ...lugar,
+              ocupado: lugar.ocupado ? "Sim" : "Não",
+              idPadraoLugar: item.id,
+            }))
+          );
+        console.log("API Response 2:", allLugares);
+
+        setTasks(allLugares);
     } catch (error) {
-      toaster.create({
-        title: 'Erro ao buscar filmes',
-        type: 'error'
-      });
+        toaster.create({
+            description: 'Erro ao buscar padrões de lugares!',
+            type: 'error'
+        });
     }
   };
   
   const criarTask = async () => {
     try {
-      const { nome, descricao, autor, duracao, cartaz } = informacoes;
-  
-      if (!nome?.trim() || !descricao?.trim() || !autor?.trim() || !duracao?.trim()) return;
+      if (!informacoes.lugares.length) return; 
   
       setLoadingSave(true);
   
-      const formData = new FormData();
-      formData.append("nome", nome);
-      formData.append("descricao", descricao);
-      formData.append("autor", autor);
-      formData.append("duracao", duracao);
-  
-      if (cartaz) {
-        formData.append("cartaz", cartaz); 
-      }
-  
-      await api.post("/filme", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
+      await api.post('/padrao-lugar', {
+        lugares: informacoes.lugares  
       });
   
       toaster.create({
-        title: "Filme cadastrado com sucesso",
-        type: "success",
+        title: 'Padrão de lugares criado com sucesso',
+        type: 'success'
       });
   
-      await buscarFilme();
-      resetForm();
+      await buscarPadraoLugares();
+      setInformacoes({
+        lugares: []  
+      });
+      setEditingIndex(null);
+      setIsOpen(false); 
+      
     } catch (error) {
       toaster.create({
-        title: "Erro ao cadastrar filme",
-        type: "error",
+        title: 'Erro ao criar padrão de lugares',
+        type: 'error'
       });
-    } 
+    }
   };
   
-  
-  
+
   const salvarEdicao = async () => {
     try {
-      if (!informacoes.nome?.trim() || editingIndex === null) return;
+      if (!informacoes.trim() || editingIndex === null) return;
       setLoadingSave(true);
-  
+
       const taskEditar = tasks[editingIndex];
-  
-      const formData = new FormData();
-      formData.append('nome', informacoes.nome);
-      formData.append('descricao', informacoes.descricao);
-      formData.append('autor', informacoes.autor);
-      formData.append('duracao', informacoes.duracao);
-      if (informacoes.cartaz) {
-        formData.append("cartaz", informacoes.cartaz);
-      }
-  
-      await api.patch(`/filme/${taskEditar.id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      await api.patch(`/sessao/${taskEditar.id}`, {
+        lugar: informacoes.lugar,
+        ocupado: informacoes.ocupado,
+        linha: informacoes.linha,
+        coluna: informacoes.coluna
       });
-  
+
       toaster.create({
-        title: 'Filme editado com sucesso',
-        type: 'success',
+        title: 'Sessão editada com sucesso',
+        type: 'success'
       });
-  
-      await buscarFilme();
-      resetForm();
+
+      await buscarPadraoLugares();
+      setEditingIndex(null);
+      setInformacoes({
+        lugares: []
+      });
+      setIsOpen(false);
     } catch (error) {
-      console.error(error);
+      setEditingIndex(null);
       toaster.create({
-        title: 'Erro ao editar filme',
-        type: 'error',
+        title: 'Erro ao editar sessão',
+        type: 'error'
       });
     } 
   };
-  
 
   const excluirTask = async (index, id) => {
     try {
@@ -129,7 +124,7 @@ export default function FilmePage() {
           type: 'sucess'
         });
 
-        await buscarFilme();
+        await buscarPadraoLugares();
       }
     } catch (error) {
       toaster.create({
@@ -143,10 +138,10 @@ export default function FilmePage() {
   const editarTask = async (index) => {
     const taskEditar = tasks[index];
     setInformacoes({
-      nome: taskEditar.nome,
-      descricao: taskEditar.descricao,
-      autor: taskEditar.autor,
-      duracao: taskEditar.duracao
+        lugar: informacoes.lugar,
+        ocupado: informacoes.ocupado,
+        linha: informacoes.linha,
+        coluna: informacoes.coluna
     });
     setEditingIndex(index);
     setIsOpen(true);
@@ -154,11 +149,7 @@ export default function FilmePage() {
 
   const resetForm = () => {
     setInformacoes({
-      nome: '',
-      descricao: '',
-      autor: '',
-      duracao: '',
-      cartaz: []
+      lugares: []
     });
     setEditingIndex(null);
     setIsOpen(false);
@@ -167,10 +158,10 @@ export default function FilmePage() {
   const indexUltimoItem = currentPage * itemsPerPage;
   const indexPrimeiroItem = indexUltimoItem - itemsPerPage;
   const tasksAtuais = tasks.slice(indexPrimeiroItem, indexUltimoItem);
-  const filteredTasks = tasks.filter(task => task.nome.toLowerCase().includes(searchTerm.toLowerCase()));
+  const filteredTasks = tasks.filter(task => task.lugar.toLowerCase().includes(searchTerm.toLowerCase()));
 
   useEffect(() => {
-    buscarFilme();
+    buscarPadraoLugares();
   }, []);
 
   useEffect(() => {
@@ -179,10 +170,10 @@ export default function FilmePage() {
 
   return (
     <Box p={8}>
-      <Heading mb={4}> Filmes </Heading>
+      <Heading mb={4}> Padrão de Lugares </Heading>
       <Flex mb={4} gap={4} align="center">
         <InputPesquisa searchTerm={searchTerm} SetSeachTerm={setSearchTerm} />
-        <DialogFilme
+        <DialogPadraoLugares
           informacoes={informacoes}
           setInformacoes={setInformacoes}
           submit={{ criarTask, salvarEdicao }}
@@ -199,11 +190,11 @@ export default function FilmePage() {
           onDelete={excluirTask}
           acoes={true}
           headers={[
-            { name: 'ID', value: 'id' },
-            { name: 'Nome', value: 'nome' },
-            { name: 'Descrição', value: 'descricao' },
-            { name: 'Autor', value: 'autor' },
-            { name: 'Duração', value: 'duracao' }
+            {name: 'ID', value: 'idPadraoLugar'},
+            { name: 'Lugar', value: 'lugar' },
+            { name: 'Linha', value: 'linha' },
+            { name: 'Coluna', value: 'coluna' },
+            { name: 'Ocupado', value: 'ocupado' }
           ]}
         />
         <Flex>
