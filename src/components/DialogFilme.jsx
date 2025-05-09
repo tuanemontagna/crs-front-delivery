@@ -81,9 +81,9 @@ export default function DialogFilme({informacoes, setInformacoes, submit, editin
                       </FileUpload.Trigger>
                       <FileUpload.List />
                     </FileUpload.Root>
-                    {typeof informacoes.cartaz === 'string' && (
+                    {editingIndex !== null && informacoes.caminhoImagem && (
                       <Image
-                        src={`http://localhost:3333/${informacoes.cartaz}`}
+                        src={`http://localhost:3333/${informacoes.caminhoImagem}`}
                         alt="Cartaz do filme"
                         mt={2}
                         maxH="150px"

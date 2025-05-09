@@ -27,7 +27,8 @@ export default function Sessao() {
     idFilme: '',
     dataInicio: '',
     dataFim: '',
-    preco: ''
+    preco: '', 
+    lugares: []
   });
   
   useEffect(() => {
@@ -60,15 +61,21 @@ export default function Sessao() {
   
   const criarTask = async () => {
     try {
-      if (!informacoes.trim()) return;
+      if (!idSala || !idFilme || !dataInicio || !dataFim || !preco) {
+        toaster.create({
+          title: 'Preencha todos os campos obrigatórios',
+          type: 'warning'
+        });
+        return;
+      }
       setLoadingSave(true);
 
       await api.post('/sessao', {
-        idSala: informacoes.idSala,
-        idFilme: informacoes.idFilme,
-        dataInicio: informacoes.dataInicio,
-        dataFim: informacoes.dataFim,
-        preco: informacoes.preco
+        idSala,
+        idFilme,
+        dataInicio,
+        dataFim,
+        preco
       });
 
       toaster.create({
@@ -82,7 +89,8 @@ export default function Sessao() {
         idFilme: '',
         dataInicio: '',
         dataFim: '',
-        preco: ''
+        preco: '',
+        lugares: [],
       });
       setIsOpen(false);
     } catch (error) {
@@ -190,7 +198,23 @@ export default function Sessao() {
       </Flex>
       <Stack style={{ display: 'flex', alignItems: 'center' }}>
         <TabelaSessao
-          items={tasksAtuais}
+          items={tasksAtuais.map(sessao => {
+            const formatarData = (data) => {
+              const d = new Date(data);
+              const hora = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+              const dataFormatada = d.toLocaleDateString('pt-BR');
+              return `hora: ${hora} data: ${dataFormatada}`;
+            };
+        
+            return {
+              ...sessao,
+              lugares: Array.isArray(sessao.lugares)
+                ? sessao.lugares.map(l => `${l.lugar} (${l.ocupado ? 'ocupado' : 'livre'})`).join(', ')
+                : '',
+              dataInicio: formatarData(sessao.dataInicio),
+              dataFim: formatarData(sessao.dataFim)
+            };
+          })}
           onEdit={editarTask}
           onDelete={excluirTask}
           acoes={true}

@@ -27,7 +27,6 @@ export default function LoginInput({ mandarDadosdofilho }) {
     mandarDadosdofilho(content);
   };
 
-  
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter') {
@@ -57,7 +56,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
           onChange={(e) => setPassword(e.target.value)}
         />
       </InputGroup>
-      <Text m="0" mt="1%" cursor="pointer" opacity={0.8} >Esqueceu a senha?</Text>
+      <Text m="0" mt="1%" cursor="pointer" opacity={0.8} onClick={() => window.location.href = '/esqueci-minha-senha'} >Esqueceu a senha?</Text>
       <Button
         onClick={mandarDados}
         onKeyDown={(e) => {
@@ -82,6 +81,7 @@ export default function LoginInput({ mandarDadosdofilho }) {
           transform: "scale(1.01)",
           transition: "0.3s",
         }}
+        onClick={() => window.location.href = '/register'}
       >Cadastrar
       </Button>
       <Toaster />

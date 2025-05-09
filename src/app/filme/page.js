@@ -22,6 +22,7 @@ export default function FilmePage() {
     descricao: '',
     autor: '',
     duracao: '',
+    caminhoImagem: '',
     cartaz: []
   });
 
@@ -146,7 +147,8 @@ export default function FilmePage() {
       nome: taskEditar.nome,
       descricao: taskEditar.descricao,
       autor: taskEditar.autor,
-      duracao: taskEditar.duracao
+      duracao: taskEditar.duracao,
+      caminhoImagem: taskEditar.caminhoImagem,
     });
     setEditingIndex(index);
     setIsOpen(true);

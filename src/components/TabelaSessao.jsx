@@ -2,7 +2,7 @@ import { Table, Stack, Button } from "@chakra-ui/react"
 import { Tooltip } from "@/components/ui/tooltip"
 import { MdMode, MdDelete } from 'react-icons/md'
 
-export default function TabelaCrud({ items, headers, onEdit, onDelete, acoes }) {
+export default function TabelaSessao({ items, headers, onEdit, onDelete, acoes }) {
   return (
     <Table.Root width="75%" size="sm" striped variant="outline">
       <Table.Header>
