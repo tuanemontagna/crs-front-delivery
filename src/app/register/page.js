@@ -2,24 +2,25 @@
 import { useState } from "react";
 import { useRouter } from 'next/navigation';
 import { toaster } from "@/components/ui/toaster";
-import InputRegister from "@/components/InputRegister";
+import RegisterInput from "@/components/RegisterInput";
 import api from "@/utils/axios";
 
 export default function Register() {
     const [informacoes, setInformacoes] = useState({
-        nome: '',
+        userName: '',
+        name: '',
         cpf: '',
-        estudante: false,
+        role: 'customer',
         email: '',
         password: '',
-        idCargo: ''
+        phone: '',
     });
 
     const router = useRouter();
 
-    const cadastrarUsuario = async () => {
+    const cadastrarUser = async () => {
         try {
-            if (!informacoes.nome?.trim() || !informacoes.cpf?.trim() || !informacoes.email?.trim() || !informacoes.password?.trim()) {
+            if (!informacoes.name?.trim() || !informacoes.cpf?.trim() || !informacoes.email?.trim() || !informacoes.password?.trim()) {
                 toaster.create({
                     title: 'Preencha todos os campos',
                     type: 'error'
@@ -27,13 +28,14 @@ export default function Register() {
                 return;
             }
 
-            await api.post('/usuario', { 
-                nome: informacoes.nome,
+            await api.post('/user', { 
+                name: informacoes.name,
                 cpf: informacoes.cpf,
-                estudante: informacoes.estudante,
+                userName: informacoes.userName,
                 email: informacoes.email,
                 password: informacoes.password,
-                idCargo: informacoes.idCargo
+                role: informacoes.role,
+                phone: informacoes.phone
              });
 
             toaster.create({
@@ -42,15 +44,16 @@ export default function Register() {
             });
 
             setInformacoes({
-                nome: '',
+                userName: '',
+                name: '',
                 cpf: '',
-                estudante: false,
+                role: 'customer',
                 email: '',
                 password: '',
-                idCargo: ''
+                phone: '',
             });
 
-            router.push('/');
+            router.push('/login');
 
         } catch (error) {
             console.log(error);
@@ -62,10 +65,10 @@ export default function Register() {
     }
 
     return (
-        <InputRegister 
+        <RegisterInput 
             informacoes={informacoes}
             setInformacoes={setInformacoes}
-            cadastrarUsuario={cadastrarUsuario}
+            cadastrarUser={cadastrarUser}
         />
     )
 }

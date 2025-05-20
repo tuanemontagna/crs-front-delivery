@@ -1,74 +1,97 @@
-import { Container, Box, Input, Button, Stack, Text} from "@chakra-ui/react";
-import { PasswordInput } from "@/components/ui/password-input"
+import { Container, Box, Input, Button, Stack, Heading } from "@chakra-ui/react";
+import { PasswordInput } from "@/components/ui/password-input";
 
-export default function InputRegister({ informacoes, setInformacoes, cadastrarUsuario }) {
+export default function InputRegister({ informacoes, setInformacoes, cadastrarUser }) {
   return (
     <Box
       minH="100vh"
+      width="100vw"
+      bg="gray.200"
       display="flex"
       alignItems="center"
       justifyContent="center"
-      bg="gray.50"
-      p={4}
     >
-      <Container maxW="lg" p={4}>
+      <Container maxW="md">
         <Box
-          p={8}
-          borderRadius="lg"
-          boxShadow="lg"
-          border="1px solid #ddd"
-          bg="white"
+          p={10}
+          borderRadius="2xl"
+          boxShadow="2xl"
+          bg="gray.150"
         >
-          <Stack spacing={6}>
-          <Text fontWeight="medium" color="black">Nome</Text>
-            <Input
-              placeholder="nome"
-              value={informacoes.nome}
-              onChange={(e) => setInformacoes({...informacoes, nome: e.target.value})}
-              color="black"
-            />
-            <Text fontWeight="medium" color="black">CPF</Text>
-            <Input
-              placeholder="cpf"
-              value={informacoes.cpf}
-              onChange={(e) => setInformacoes({...informacoes, cpf: e.target.value})}
-              color="black"
-            />
-            <Text fontWeight="medium" color="black">Digite seu e-mail</Text>
-            <Input
-              placeholder="exemplo@informacoes.com"
-              value={informacoes.email}
-              onChange={(e) => setInformacoes({...informacoes, email: e.target.value})}
-              color="black"
-            />
-            <Text fontWeight="medium" color="black">Estudante?</Text>
-            <Input
-              placeholder="true/false"
-              value={informacoes.estudante}
-              onChange={(e) => setInformacoes({...informacoes, estudante: e.target.value})}
-              color="black"
-            />
-            <Text fontWeight="medium" color="black">ID do Cargo</Text>
-            <Input
-              placeholder="id cargo"
-              value={informacoes.idCargo}
-              onChange={(e) => setInformacoes({...informacoes, idCargo: e.target.value})}
-              color="black"
-            />
-            <Text fontWeight="medium" color="black">Senha</Text>
-            <PasswordInput
-              placeholder="senha"
-              value={informacoes.password}
-              onChange={(e) => setInformacoes({...informacoes, password: e.target.value})}
-              color="black"
-            />
-            <Button
-              background="black"
-              color="white"
-              width="100%"
-              onClick={cadastrarUsuario}
+          <Stack spacing={5}>
+            <Heading
+              size="lg"
+              textAlign="center"
+              mb={4}
+              color="#3e7671"
+              fontWeight="bold"
             >
-              Cadastrar 
+              Criar Conta
+            </Heading>
+
+            <Input
+              placeholder="Nome completo"
+              value={informacoes.name}
+              onChange={(e) => setInformacoes({ ...informacoes, name: e.target.value })}
+              size="md"
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <Input
+              placeholder="Nome de usuário"
+              value={informacoes.userName}
+              onChange={(e) => setInformacoes({ ...informacoes, userName: e.target.value })}
+              size="md"
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <Input
+              placeholder="CPF"
+              value={informacoes.cpf}
+              onChange={(e) => setInformacoes({ ...informacoes, cpf: e.target.value })}
+              size="md"
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <Input
+              placeholder="E-mail"
+              type="email"
+              value={informacoes.email}
+              onChange={(e) => setInformacoes({ ...informacoes, email: e.target.value })}
+              size="md"
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <Input
+              placeholder="Telefone"
+              value={informacoes.phone}
+              onChange={(e) => setInformacoes({ ...informacoes, phone: e.target.value })}
+              size="md"
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <PasswordInput
+              placeholder="Senha"
+              value={informacoes.password}
+              onChange={(e) => setInformacoes({ ...informacoes, password: e.target.value })}
+              color="black"
+              focusBorderColor="#3e7671"
+            />
+
+            <Button
+              bg="#3e7671"
+              color="white"
+              size="lg"
+              mt={4}
+              _hover={{ bg: "#2e5c57", transform: "scale(1.02)" }}
+              onClick={cadastrarUser}
+            >
+              Criar conta
             </Button>
           </Stack>
         </Box>

@@ -1,61 +1,81 @@
 'use client'
-import { Box, Button, Flex, Heading, Image, Text, VStack } from '@chakra-ui/react'
-import React from 'react'
+import { useState, useEffect } from "react";
+import { Container, Heading, Spinner } from "@chakra-ui/react";
+import CategoryList from "@/components/homePage/CategoryList";
+import ProductGrid from "@/components/homePage/ProductGrid";
+import axios from "axios";
 
-export default function Home() {
+export default function HomePage() {
+  const [categories, setCategories] = useState([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await axios.get("/api/categories");
+        setCategories(res.data);
+        if (res.data.length > 0) {
+          setSelectedCategoryId(res.data[0].id);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar categorias:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    if (!selectedCategoryId) return;
+    setLoading(true);
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get(`/api/products?category=${selectedCategoryId}`);
+        setProducts(res.data);
+      } catch (error) {
+        console.error("Erro ao buscar produtos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [selectedCategoryId]);
+
   return (
-    <Box minH="100vh" bgGradient="linear(to-br, #e0f7f6, #ffffff)" px={6} py={8}>
-      <Flex
-        align="center"
-        justify="center"
-        direction="column"
-        textAlign="center"
-        mt={{ base: 20, md: 32 }}
-      >
-        <Image
-          src="/images/logoDelivery.png"
-          alt="Logo"
-          w={{ base: '120px', md: '150px' }}
-          h={{ base: '120px', md: '150px' }}
-          borderRadius="full"
-          shadow="md"
-          mb={6}
+    <Container maxW="container.xl" py={6}>
+      <Heading mb={4} fontSize="2xl" color="#3e7671">
+        Bem-vindo ao Restaurante
+      </Heading>
+
+      {/* Mostra spinner enquanto carrega produtos OU categorias */}
+      {loading && <Spinner mt={6} color="#3e7671" />}
+
+      {/* Só mostra categorias se houver */}
+      {!loading && categories.length > 0 && (
+        <CategoryList
+          categories={categories}
+          selectedCategoryId={selectedCategoryId}
+          onSelect={setSelectedCategoryId}
         />
+      )}
 
-        <Heading
-          size={{ base: 'lg', md: '2xl' }}
-          color="#3e7671"
-          fontWeight="bold"
-          mb={4}
-        >
-          Bem-vindo ao CRS Delivery
+      {/* Só mostra produtos se houver */}
+      {!loading && products.length > 0 && (
+        <ProductGrid products={products} />
+      )}
+
+      {/* Mensagens só aparecem se não estiver carregando */}
+      {!loading && categories.length === 0 && (
+        <Heading size="md" color="gray.500" mt={8}>
+          Nenhuma categoria cadastrada.
         </Heading>
-
-        <Text maxW="600px" fontSize="lg" color="gray.600" mb={8}>
-          Faça seus pedidos com facilidade, acompanhe suas entregas e aproveite o melhor da nossa cozinha.
-        </Text>
-
-        <VStack spacing={4}>
-          <Button
-            size="lg"
-            colorScheme="teal"
-            variant="solid"
-            w="200px"
-            onClick={() => window.location.href = '/cardapio'}
-          >
-            Ver Cardápio
-          </Button>
-          <Button
-            size="lg"
-            colorScheme="gray"
-            variant="outline"
-            w="200px"
-            onClick={() => window.location.href = '/login'}
-          >
-            Fazer Login
-          </Button>
-        </VStack>
-      </Flex>
-    </Box>
-  )
+      )}
+      {!loading && categories.length > 0 && products.length === 0 && (
+        <Heading size="md" color="gray.500" mt={8}>
+          Nenhum produto encontrado.
+        </Heading>
+      )}
+    </Container>
+  );
 }
