@@ -1,19 +1,31 @@
-import { Input, InputGroup, InputLeftElement } from "@chakra-ui/react";
-import { SearchIcon } from "@chakra-ui/icons";
+import { Box, Input } from "@chakra-ui/react";
+import { IoIosSearch } from "react-icons/io";
 
-export default function SearchBar({ value, onChange }) {
+export default function SearchBar({ search, setSearch }) {
   return (
-    <InputGroup px={4} py={2}>
-      <InputLeftElement pointerEvents="none">
-        <SearchIcon color="gray.500" />
-      </InputLeftElement>
+    <Box position="relative" maxW="lg" mx="auto" mb={6}>
       <Input
-        placeholder="Buscar por item..."
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
+        type="text"
+        placeholder="Buscar por produto"
+        color="gray"
         bg="white"
-        borderRadius="md"
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        borderRadius="full"
+        boxShadow="sm"
+        pl="44px"
+        h="45px"
+        _focus={{ borderColor: "#eb722b", boxShadow: "0 0 0 1px #eb722b" }}
       />
-    </InputGroup>
+      <Box
+        position="absolute"
+        top="50%"
+        left="16px"
+        transform="translateY(-50%)"
+        pointerEvents="none"
+      >
+        <IoIosSearch size={20} color="gray" />
+      </Box>
+    </Box>
   );
 }

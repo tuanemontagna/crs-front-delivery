@@ -1,8 +1,8 @@
 'use client'
-import { Box, VStack, Image, Heading, Text, useBreakpointValue } from "@chakra-ui/react";
+import { Box, Flex, VStack, Image, Heading, Text, useBreakpointValue } from "@chakra-ui/react";
 import React from 'react';
 import LoginInput from "@/components/LoginInput";
-import { Toaster, toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 import axios from "@/utils/axios";
 import { useRouter } from 'next/navigation';
 
@@ -37,34 +37,51 @@ export default function Login() {
     await loginUsuario(content);
   };
 
-  const logoSize = useBreakpointValue({ base: "150px", md: "180px" });
-
   return (
+  <Flex w="100vw" h="100vh">
+    {/* Lado esquerdo: imagem ocupa 65% da área */}
     <Box
-      w="100vw"
-      h="100vh"
-      bg="gray.900"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      px={4}
+      flex="0 0 65%"
+      position="relative"
+      minH="100vh"
+      minW={0}
+      overflow="hidden"
     >
-      <VStack spacing={6} w="100%" maxW="400px" textAlign="center">
-        <Image
-          src="/images/logoDelivery.png"
-          w={logoSize}
-          h={logoSize}
-          borderRadius="full"
-          objectFit="cover"
-          boxShadow="lg"
-        />
+      <Image
+        src="/images/delivery.png"
+        alt="Logo"
+        position="absolute"
+        top={0}
+        left={0}
+        w="100%"
+        h="100%"
+        objectFit="cover"
+      />
+    </Box>
+
+    {/* Lado direito: inputs centralizados, sem card */}
+    <Box
+      flex="0 0 35%"
+      bg="#18181b"
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+    >
+      <VStack
+        spacing={6}
+        w="100%"
+        maxW="400px"
+        px={8}
+        textAlign="center"
+      >
         <Heading color="white" fontSize={{ base: "2xl", md: "3xl" }}>
-          Bem-Vindo!
+          Acesse sua conta
         </Heading>
-        <Text color="gray.300">Acesse sua conta para continuar</Text>
+        <Text color="gray.400" mb={2}>Faça login para continuar</Text>
         <LoginInput mandarDadosdofilho={receberDadosdoFilho} />
       </VStack>
       <Toaster />
     </Box>
-  );
+  </Flex>
+);
 }

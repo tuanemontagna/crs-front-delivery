@@ -20,44 +20,47 @@ export default function RedefinirSenha({ informacoes, setInformacoes, redefinirS
     >
       <Container maxW="sm" bg="gray.150" p={8} borderRadius="xl" boxShadow="2xl">
         <Stack spacing={6}>
-          <Text fontSize="2xl" fontWeight="bold" textAlign="center" color="#3e7671">
+          <Text fontSize="2xl" fontWeight="bold" textAlign="center" color="#eb722b">
             Redefinir Senha
           </Text>
 
-          <InputGroup startElement={<FaEnvelope color="#3e7671" />}>
+          <InputGroup startElement={<FaEnvelope color="#eb722b" />}>
             <Input
               type="email"
               placeholder="Digite seu e-mail"
               value={informacoes.email}
               onChange={(e) => setInformacoes({ ...informacoes, email: e.target.value })}
               color="black"
+              focusBorderColor="#eb722b"
             />
           </InputGroup>
 
-          <InputGroup startElement={<PiPassword color="#3e7671" />}>
+          <InputGroup startElement={<PiPassword color="#eb722b" />}>
             <Input
               type="text"
               placeholder="Digite o código"
               value={informacoes.codigo}
               onChange={(e) => setInformacoes({ ...informacoes, codigo: e.target.value })}
               color="black"
+              focusBorderColor="#eb722b"
             />
           </InputGroup>
 
-          <InputGroup startElement={<TbLockPassword color="#3e7671" />}>
+          <InputGroup startElement={<TbLockPassword color="#eb722b" />}>
             <PasswordInput
               type="password"
               placeholder="Digite a nova senha"
               value={informacoes.novaSenha}
               onChange={(e) => setInformacoes({ ...informacoes, novaSenha: e.target.value })}
               color="black"
+              focusBorderColor="#eb722b"
             />
           </InputGroup>
 
           <Button
-            bg="#3e7671"
+            bg="#eb722b"
             color="white"
-            _hover={{ bg: "#2c5c57" }}
+            _hover={{ bg: "#c45c1e" }}
             onClick={redefinirSenha}
           >
             Enviar
@@ -66,10 +69,10 @@ export default function RedefinirSenha({ informacoes, setInformacoes, redefinirS
           <Text
             textAlign="center"
             fontSize="sm"
-            color="gray.600"
+            color="#eb722b"
             mt={2}
             cursor="pointer"
-            _hover={{ textDecoration: "underline" }}
+            _hover={{ textDecoration: "underline", color: "#c45c1e" }}
             onClick={() => window.location.href = '/login'}
           >
             Voltar para o login
