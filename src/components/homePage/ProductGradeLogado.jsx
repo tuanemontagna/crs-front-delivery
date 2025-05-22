@@ -34,6 +34,17 @@ export default function ProductGrade({ products, loading, onAddToCart }) {
           <Text fontWeight="bold" color="#eb722b" fontSize="md" mb={3}>
             {prod.price?.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
           </Text>
+          <Button
+            colorScheme="orange"
+            bg="#eb722b"
+            color="white"
+            size="sm"
+            w="100%"
+            onClick={() => onAddToCart(prod)}
+            _hover={{ bg: "#c45c1e" }}
+          >
+            Adicionar ao carrinho
+          </Button>
         </Box>
       ))}
     </SimpleGrid>

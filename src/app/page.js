@@ -94,38 +94,6 @@ const handleAddToCart = (product) => {
           </Box>
         </HStack>
       </Box>
-      <Box position="absolute" top="16px" right="24px">
-        <Box position="relative">
-          <Box
-            as="button"
-            bg="white"
-            borderRadius="full"
-            p={2}
-            _hover={{ bg: "gray.100" }}
-            cursor="pointer"
-          >
-            <IoCartOutline size={24} color="#eb722b" />
-            {cart.length > 0 && (
-              <Box
-                position="absolute"
-                top="-6px"
-                right="-6px"
-                bg="#eb722b"
-                color="white"
-                borderRadius="full"
-                fontSize="xs"
-                px={2}
-                py={0.5}
-                minW="20px"
-                textAlign="center"
-                fontWeight="bold"
-              >
-                {cart.length}
-              </Box>
-            )}
-          </Box>
-        </Box>
-      </Box>
       <Box display="flex" alignItems="center" justifyContent="center" h="100%">
         <Heading color="white" fontSize={{ base: "2xl", md: "3xl" }}>CRS Delivery</Heading>
       </Box>
