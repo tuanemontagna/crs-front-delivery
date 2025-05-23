@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { Button, CloseButton, Dialog, Portal, Input, Text } from "@chakra-ui/react"
+import { Button, CloseButton, Dialog, Input, Text } from "@chakra-ui/react"
 import api from "@/utils/axios";
 import { toaster } from "@/components/ui/toaster";
 

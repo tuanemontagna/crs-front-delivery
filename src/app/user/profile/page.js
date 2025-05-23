@@ -7,6 +7,7 @@ import { IoMdArrowRoundBack } from "react-icons/io";
 import { toaster } from "@/components/ui/toaster";
 import api from "@/utils/axios.js";
 import { useRouter } from "next/navigation";
+import InfoToken from "@/components/InfoToken.js";
 
 export default function Profile() {
   const router = useRouter();
@@ -20,8 +21,8 @@ export default function Profile() {
 
   const buscarUser = async () => {
     try {
-      //const idUser = localStorage.getItem('idUser');
-      const response = await api.get(`/user/1`);
+      const idUser = await InfoToken();
+      const response = await api.get(`/user/${idUser}`);
       setInformacoes(response.data.data);
     } catch (error) {
       console.log(error);
