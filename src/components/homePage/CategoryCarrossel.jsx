@@ -1,5 +1,13 @@
 import { HStack, VStack, Box, Image, Text } from "@chakra-ui/react";
 
+const categoryImages = {
+  1: "/images/massas.png",
+  2: "/images/carnes.png",
+  3: "/images/bebidas.png",
+  4: "/images/sobremesas.png",
+  5: "/images/aperitivos.png",
+};
+
 export default function CategoryCarrossel({ categories, selectedCategoryId, setSelectedCategoryId }) {
   return (
     <HStack overflowX="auto" spacing={4} py={2}>
@@ -20,7 +28,12 @@ export default function CategoryCarrossel({ categories, selectedCategoryId, setS
           alignItems="center"
           justifyContent="center"
         >
-          <Image src="/category-default.png" alt="Todos" boxSize="32px" />
+          <Image 
+          src="/images/todos.png" 
+          alt="Todos" 
+          boxSize="40px" 
+          borderRadius="full"
+          />
         </Box>
         <Text
           fontSize="sm"
@@ -49,7 +62,12 @@ export default function CategoryCarrossel({ categories, selectedCategoryId, setS
             alignItems="center"
             justifyContent="center"
           >
-            <Image src={cat.iconUrl || "/category-default.png"} alt={cat.name} boxSize="32px" />
+            <Image
+              src={categoryImages[cat.id] || "/category-default.png"}
+              alt={cat.name}
+              boxSize="40px"
+              borderRadius="full"
+            />
           </Box>
           <Text
             fontSize="sm"

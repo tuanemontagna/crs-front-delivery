@@ -12,7 +12,8 @@ import SearchBar from "@/components/homePage/SearchBar.jsx"
 import EmptyState from "@/components/homePage/EmptyState.jsx"
 import CartDialog from "@/components/homePage/CartDialog.jsx";
 import { toaster } from "@/components/ui/toaster";
-import ProfileMenu from "@/components/homePage/ProfileMenu";
+import ProfileMenu from "@/components/homePage/ProfileMenu.jsx";
+import { useRouter } from "next/navigation";
 import api from "@/utils/axios.js";
 
 export default function HomePage() {
@@ -22,6 +23,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState("");
   const [user, setUser] = useState(null);
+  const router = useRouter();
 
   const buscarCategories = async () => {
     try {
@@ -68,8 +70,12 @@ export default function HomePage() {
 
 const buscarUser = async () => {
   try {
-    const response = await api.get('/user');
+    //const idUser = await InfoToken();
+    const idUser = 2;
+    console.log("ID do usuário retornado por InfoToken:", idUser);
+    const response = await api.get(`/user/${idUser}`);
     setUser(response.data.data);
+    
   } catch (error) {
     console.log(error);
     toaster.create({
@@ -81,7 +87,7 @@ const buscarUser = async () => {
 
 const atualizarCarrinho = async (novoCarrinho) => {
   try {
-    const response = await api.patch(`/user/${user.id}`, { cart: novoCarrinho });
+    const response = await api.patch(`/user/2`, { cart: novoCarrinho });
     setUser(response.data.data);
   } catch (error) {
     console.log(error);
@@ -92,19 +98,47 @@ const atualizarCarrinho = async (novoCarrinho) => {
   }
 };
 
-
 const handleAddToCart = (product) => {
-  const novoCarrinho = [...(user?.cart || []), product];
+  const cartAtual = user?.cart || [];
+  const index = cartAtual.findIndex(item => item.idProduct === product.id);
+
+  let novoCarrinho;
+  if (index !== -1) {
+    novoCarrinho = cartAtual.map((item, i) =>
+      i === index
+        ? { ...item, quantity: item.quantity + 1 }
+        : item
+    );
+  } else {
+    novoCarrinho = [
+      ...cartAtual,
+      {
+        idProduct: product.id,
+        name: product.name, 
+        priceProducts: product.price,
+        quantity: 1
+      }
+    ];
+  }
   atualizarCarrinho(novoCarrinho);
+  toaster.create({
+    title: 'Produto adicionado ao carrinho!',
+    type: 'success'
+  });
 };
 
 const handleClearCart = () => {
     atualizarCarrinho([]);
+    toaster.create({
+    title: 'Carrinho limpo com sucesso!',
+    type: 'success'
+  });
 };
 
 const handleFinishOrder = () => {
   alert("Pedido finalizado!");
   atualizarCarrinho([]);
+  router.push('/user/order');
 };
 
 useEffect(() => {
@@ -122,7 +156,7 @@ useEffect(() => {
         <Box position="absolute" top="16px" right="24px">
           <HStack spacing={3}>
             <CartDialog
-              cart={user?.cart || []}
+              cart={user?.cart}
               onClearCart={handleClearCart}
               onFinishOrder={handleFinishOrder}
             />
