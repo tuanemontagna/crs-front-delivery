@@ -7,12 +7,11 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import CategoryCarrossel from "@/components/homePage/CategoryCarrossel.jsx"
-import ProductGradeLogado from "@/components/homePage/ProductGradeLogado.jsx"
+import ProductGradeAdmin from "@/components/admin/ProductGradeAdmin.jsx"
 import SearchBar from "@/components/homePage/SearchBar.jsx"
 import EmptyState from "@/components/homePage/EmptyState.jsx"
-import CartDialog from "@/components/homePage/CartDialog.jsx";
 import { toaster } from "@/components/ui/toaster";
-import ProfileMenu from "@/components/homePage/ProfileMenu.jsx";
+import AdminMenu from "@/components/admin/AdminMenu.jsx";
 import { useRouter } from "next/navigation";
 import api from "@/utils/axios.js";
 
@@ -85,60 +84,6 @@ const buscarUser = async () => {
   }
 };
 
-const atualizarCarrinho = async (novoCarrinho) => {
-  try {
-    const response = await api.patch(`/user/2`, { cart: novoCarrinho });
-    setUser(response.data.data);
-  } catch (error) {
-    console.log(error);
-    toaster.create({
-      title: 'Erro ao atualizar carrinho',
-      type: 'error'
-    });
-  }
-};
-
-const handleAddToCart = (product) => {
-  const cartAtual = user?.cart || [];
-  const index = cartAtual.findIndex(item => item.idProduct === product.id);
-
-  let novoCarrinho;
-  if (index !== -1) {
-    novoCarrinho = cartAtual.map((item, i) =>
-      i === index
-        ? { ...item, quantity: item.quantity + 1 }
-        : item
-    );
-  } else {
-    novoCarrinho = [
-      ...cartAtual,
-      {
-        idProduct: product.id,
-        name: product.name, 
-        priceProducts: product.price,
-        quantity: 1
-      }
-    ];
-  }
-  atualizarCarrinho(novoCarrinho);
-  toaster.create({
-    title: 'Produto adicionado ao carrinho!',
-    type: 'success'
-  });
-};
-
-const handleClearCart = () => {
-    atualizarCarrinho([]);
-    toaster.create({
-    title: 'Carrinho limpo com sucesso!',
-    type: 'success'
-  });
-};
-
-const handleFinishOrder = () => {
-  router.push('/user/order');
-};
-
 useEffect(() => {
   buscarUser();
   buscarCategories();
@@ -153,16 +98,11 @@ useEffect(() => {
       <Box w="100%" h={{ base: "120px", md: "180px" }} bg="#eb722b" position="relative" mb={4}>
         <Box position="absolute" top="16px" right="24px">
           <HStack spacing={3}>
-            <CartDialog
-              cart={user?.cart}
-              onClearCart={handleClearCart}
-              onFinishOrder={handleFinishOrder}
-            />
-            <ProfileMenu />
+            <AdminMenu />
           </HStack>
         </Box>
         <Box display="flex" alignItems="center" justifyContent="center" h="100%">
-          <Heading color="white" fontSize={{ base: "2xl", md: "3xl" }}>CRS Delivery</Heading>
+          <Heading color="white" fontSize={{ base: "2xl", md: "3xl" }}>Painel Administrativo</Heading>
         </Box>
       </Box>
 
@@ -177,7 +117,7 @@ useEffect(() => {
             />
           </Box>
         )}
-        <ProductGradeLogado products={products} loading={loading} onAddToCart={handleAddToCart} />
+        <ProductGradeAdmin products={products} loading={loading} />
         <EmptyState
           categories={categories}
           products={products}

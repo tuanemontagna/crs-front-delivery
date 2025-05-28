@@ -17,8 +17,8 @@ export default function SelectAdress({
     })),
   });
 
-  const handleChange = (val) => {
-    onChange && onChange(val);
+  const handleChange = (details) => {
+    onChange && onChange(details.value.length > 0 ? details.value[0] : "");
   };
 
   return (

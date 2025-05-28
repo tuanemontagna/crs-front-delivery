@@ -32,17 +32,9 @@ export default function ProfileMenu() {
             <Menu.Item 
             _hover={{ bg: "white" }} 
             color="#eb722b" 
-            onClick={() => window.location.href = "/user/adress"}
+            onClick={() => window.location.href = "/admin/configuracoes"}
             >
-            Endereços
-            </Menu.Item>
-
-            <Menu.Item 
-            _hover={{ bg: "white" }} 
-            color="#eb722b" 
-            onClick={() => window.location.href ="/user/historico-pedidos"}
-            >
-            Meus Pedidos
+            Configurações
             </Menu.Item>
 
             <Menu.Item 

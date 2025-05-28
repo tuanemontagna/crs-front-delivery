@@ -13,16 +13,20 @@ import api from "@/utils/axios.js";
 import { toaster } from "@/components/ui/toaster"
 import SelectPayment from "@/components/order/SelectPayment.jsx";
 import SelectAdress from "@/components/order/SelectAdress.jsx";
+import { useRouter } from 'next/navigation';
 
 export default function Order() {
   const [user, setUser] = useState(null);
-  const [cupom, setCupom] = useState("");
+  const [cupons, setCupons] = useState([]);
+  const [cupom, setCupom] = useState(""); 
   const [enderecos, setEnderecos] = useState([]);
   const [enderecoSelecionado, setEnderecoSelecionado] = useState("");
   const [pagamentos, setPagamentos] = useState([]);
   const [pagamentoSelecionado, setPagamentoSelecionado] = useState("");
   const [total, setTotal] = useState(0);
   const [totalComDesconto, setTotalComDesconto] = useState(0);  
+
+  const router = useRouter();
 
     const buscarUser = async () => {
         try {
@@ -42,20 +46,20 @@ export default function Order() {
     };
 
     const buscarAdress = async () => {
-        try {
-            //const idUser = await InfoToken();
-            const idUser = 2;
-            console.log("ID do usuário retornado por InfoToken:", idUser);
-            const response = await api.get(`/adress`);
-            setEnderecos(response.data.data);
-            
-        } catch (error) {
-            console.log(error);
-            toaster.create({
-            title: 'Erro ao buscar endereços',
-            type: 'error'
-            });
-        }
+      try {
+          //const idUser = await InfoToken();
+          const idUser = 2;
+          console.log("ID do usuário retornado por InfoToken:", idUser);
+          const response = await api.get(`/adress`);
+          const enderecosUsuario = response.data.data.filter(end => end.idUser === idUser);
+          setEnderecos(enderecosUsuario);
+      } catch (error) {
+          console.log(error);
+          toaster.create({
+              title: 'Erro ao buscar endereços',
+              type: 'error'
+          });
+      }
     };
 
     const buscarPayments = async () => {
@@ -74,9 +78,8 @@ export default function Order() {
 
     const buscarCupons = async () => {
         try {
-            const response = await api.get(`/cupom`);
-            setCupom(response.data.data);
-            
+          const response = await api.get(`/cupom`);
+          setCupons(response.data.data);
         } catch (error) {
             console.log(error);
             toaster.create({
@@ -102,26 +105,79 @@ export default function Order() {
   }, [user]);
 
   const aplicarCupom = async () => {
-  try {
-    const response = await api.post('/order/calcular-total', {
-      idUserCustomer: user.id,
-      idCupom: cupom || null,
-    });
-    setTotal(response.data.total);
-    setTotalComDesconto(response.data.totalDiscount);
-    toaster.create({
-      title: 'Cupom aplicado com sucesso!',
-      type: 'success'
-    });
-  } catch (error) {
-    toaster.create({
-      title: error.response?.data?.message || 'Erro ao aplicar cupom',
-      type: 'error'
-    });
-    setTotal(user.cart.reduce((sum, item) => sum + item.priceProducts * item.quantity, 0));
-    setTotalComDesconto(0);
-  }
-};
+    try {
+      const cupomObj = cupons.find(c => c.code === cupom);
+      const idCupom = cupomObj ? cupomObj.id : null;
+
+      const response = await api.post('/order/calcular-total', {
+        idUserCustomer: user.id,
+        idCupom: idCupom, 
+      });
+      setTotal(response.data.total);
+      setTotalComDesconto(response.data.totalDiscount);
+      toaster.create({
+        title: 'Cupom aplicado com sucesso!',
+        type: 'success'
+      });
+    } catch (error) {
+      toaster.create({
+        title: error.response?.data?.message || 'Erro ao aplicar cupom',
+        type: 'error'
+      });
+      setTotal(user.cart.reduce((sum, item) => sum + item.priceProducts * item.quantity, 0));
+      setTotalComDesconto(0);
+    }
+  };
+
+  const confirmarPedido = async () => {
+    if (!enderecoSelecionado || !pagamentoSelecionado) {
+      toaster.create({
+        title: "Selecione endereço e forma de pagamento.",
+        type: "error"
+      });
+      return;
+    }
+
+    const parsedAddressId = parseInt(enderecoSelecionado, 10);
+    const parsedPaymentId = parseInt(pagamentoSelecionado, 10);
+
+    if (isNaN(parsedAddressId) || isNaN(parsedPaymentId)) {
+      toaster.create({
+        title: "ID de endereço ou pagamento inválido.",
+        type: "error"
+      });
+      return;
+    }
+
+    const cupomObj = cupons.find(c => c.code === cupom);
+    const idCupomToSend = cupomObj ? cupomObj.id : null;
+
+    try {
+      await api.post('/order', {
+        idUserCustomer: user.id,
+        idAdress: parsedAddressId,
+        idPayment: parsedPaymentId,
+        idCupom: idCupomToSend, 
+        cart: user.cart.map(item => ({ 
+            idProduct: item.idProduct,
+            quantity: item.quantity
+        }))
+      });
+      toaster.create({
+        title: "Pedido realizado com sucesso!",
+        type: "success"
+      });
+      setUser(prev => ({ ...prev, cart: [] }));
+      await api.delete(`/user/${user.id}/limpar-carrinho`);
+      router.push('/user/cardapio');
+      
+    } catch (error) {
+      toaster.create({
+        title: error.response?.data?.message || "Erro ao confirmar pedido.",
+        type: "error"
+      });
+    }
+  };
 
   return (
   <Box
@@ -196,19 +252,40 @@ export default function Order() {
         Aplicar
       </Button>
     </HStack>
+    
+    {/* Endereço */}
+    <Text fontWeight="bold" mb={1} color="#eb722b">
+      Endereço de Entrega:
+    </Text>
+    {enderecos.length === 0 ? (
+      <Box mb={4}>
+        <Text color="#cf5f1f" mb={2}>Nenhum endereço cadastrado.</Text>
+        <Button
+          color="white"
+          bg="#eb722b"
+          _hover={{ bg: "#cf5f1f" }}
+          onClick={() => {
 
-    <SelectAdress
+            window.location.href = '/user/adress';
+          }}
+        >
+          Cadastrar Endereço
+        </Button>
+      </Box>
+    ) : (
+      <SelectAdress
         label="Selecione o Endereço"
         placeholder="Escolha o endereço de entrega"
         items={enderecos.map((end) => ({
-            label: `${end.street}, ${end.numberForget} - ${end.district}`,
-            value: end.id.toString(),
+          label: `${end.street}, ${end.numberForget} - ${end.district}`,
+          value: end.id.toString(),
         }))}
         value={enderecoSelecionado}
         onChange={setEnderecoSelecionado}
         borderColor="#eb722b"
         color="#eb722b"
-        />
+      />
+    )}
 
     {/* Pagamento */}
     <SelectPayment
@@ -231,6 +308,7 @@ export default function Order() {
       size="lg"
       w="100%"
       mt={6}
+      onClick={confirmarPedido}
     >
       Confirmar Pedido
     </Button>
