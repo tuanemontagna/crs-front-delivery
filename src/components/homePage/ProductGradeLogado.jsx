@@ -25,7 +25,7 @@ export default function ProductGrade({ products, loading, onAddToCart }) {
             mx="auto"
             mb={3}
           />
-          <Text fontWeight="bold" fontSize="lg" mb={1} color="#eb722b">
+          <Text fontWeight="bold" fontSize="lg" mb={1} color="gray.700">
             {prod.name}
           </Text>
           <Text fontSize="sm" color="gray.600" mb={2}>

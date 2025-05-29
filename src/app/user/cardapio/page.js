@@ -14,6 +14,7 @@ import CartDialog from "@/components/homePage/CartDialog.jsx";
 import { toaster } from "@/components/ui/toaster";
 import ProfileMenu from "@/components/homePage/ProfileMenu.jsx";
 import { useRouter } from "next/navigation";
+import InfoToken from "@/components/InfoToken.js";
 import api from "@/utils/axios.js";
 
 export default function HomePage() {
@@ -70,8 +71,7 @@ export default function HomePage() {
 
 const buscarUser = async () => {
   try {
-    //const idUser = await InfoToken();
-    const idUser = 2;
+    const idUser = await InfoToken();
     console.log("ID do usuário retornado por InfoToken:", idUser);
     const response = await api.get(`/user/${idUser}`);
     setUser(response.data.data);
@@ -148,9 +148,27 @@ useEffect(() => {
   buscarProducts();
 }, [selectedCategoryId, search]);
 
+useEffect(() => {
+        const initializePage = async () => {
+            const isValidToken = await InfoToken();
+            if (!isValidToken) {
+                toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
+                router.push('/login');
+                setIsLoadingPage(false);
+                return;
+            } else {
+                console.error("Error getting user ID:", error);
+                setPageError("Error identifying user.");
+                toaster.create({ description: 'Error identifying user.', type: 'error' });
+                setIsLoadingPage(false);
+            }
+        };
+        initializePage();
+    }, [router]);
+
  return (
       <Box bg="gray.50" minH="100vh" py={0}>
-      <Box w="100%" h={{ base: "120px", md: "180px" }} bg="#eb722b" position="relative" mb={4}>
+      <Box w="100%" h={{ base: "80px", md: "100px" }} bg="#eb722b" position="relative" mb={4}>
         <Box position="absolute" top="16px" right="24px">
           <HStack spacing={3}>
             <CartDialog

@@ -81,7 +81,7 @@ const handleAddToCart = (product) => {
  return (
   <Box bg="gray.50" minH="100vh" py={0}>
     {/* Banner topo */}
-    <Box w="100%" h={{ base: "120px", md: "180px" }} bg="#eb722b" position="relative" mb={4}>
+    <Box w="100%" h={{ base: "80px", md: "100px" }} bg="#eb722b" position="relative" mb={4}>
       <Box position="absolute" top="16px" right="120px">
         <HStack spacing={3}>
           <Box as="button" bg="white" color="#eb722b" fontWeight="bold" px={4} py={1} borderRadius="full"

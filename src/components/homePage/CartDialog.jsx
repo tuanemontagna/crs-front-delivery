@@ -8,6 +8,8 @@ import {
   List,
   ListItem,
   HStack,
+  VStack,
+  // Divider, // Removido
 } from "@chakra-ui/react";
 import { IoCartOutline } from "react-icons/io5";
 
@@ -29,89 +31,120 @@ export default function CartDialog({ cart, onClearCart, onFinishOrder }) {
           w="50px"
           h="50px"
           p={0}
+          aria-label="Abrir carrinho"
         >
           <IoCartOutline size={24} color="#eb722b" />
         </Button>
       </Dialog.Trigger>
       <Portal>
-        <Dialog.Backdrop />
+        <Dialog.Backdrop bg="blackAlpha.600" />
         <Dialog.Positioner>
-          <Dialog.Content bg="white" borderRadius="lg" border="2px solid #eb722b">
-            <Box px={4} pt={4} pb={2}>
-            <Text fontWeight="bold" fontSize="xl" color="#eb722b">
-              Carrinho
-            </Text>
-          </Box>
-            <Dialog.Body>
+          <Dialog.Content
+            bg="white"
+            borderRadius="lg"
+            boxShadow="xl"
+            borderWidth="1px"
+            borderColor="gray.200"
+            maxWidth="400px"
+            width="90vw"
+          >
+            <Dialog.Header px={6} py={4} borderBottomWidth="1px" borderColor="gray.100">
+              <HStack justifyContent="space-between" alignItems="center">
+                <Text fontWeight="bold" fontSize="xl" color="gray.700">
+                  Seu Carrinho
+                </Text>
+                <Dialog.CloseTrigger asChild>
+                  <CloseButton size="md" color="gray.500" _hover={{ color: "gray.700", bg: "gray.100" }} />
+                </Dialog.CloseTrigger>
+              </HStack>
+            </Dialog.Header>
+
+            <Dialog.Body px={6} py={4}>
               {cart && cart.length > 0 ? (
-                <>
-                  <List.Root spacing={3}>
+                <VStack spacing={0} align="stretch"> {/* Alterado spacing para 0, o espaçamento será dado pelo padding e borda */}
+                  <List.Root>
                     {cart.map((item, index) => (
-                      <Box key={item.idProduct}>
-                        <List.Item>
+                      <ListItem 
+                        key={item.idProduct} 
+                        py={3} // Aumentado padding vertical
+                        borderBottomWidth={index < cart.length - 1 ? "1px" : "0px"} // Borda inferior para todos menos o último
+                        borderColor="gray.100"
+                      >
+                        <HStack justifyContent="space-between">
+                          <Box>
+                            <Text color="gray.700" fontWeight="medium">
+                              {item.name || `Produto #${item.idProduct}`}
+                            </Text>
+                            <Text color="gray.500" fontSize="sm">
+                              Quantidade: {item.quantity}
+                            </Text>
+                          </Box>
                           <Text color="#eb722b" fontWeight="semibold">
-                            Produto: #{item.idProduct}
-                          </Text>
-                          <Text color="#eb722b">Quantidade: {item.quantity}</Text>
-                          <Text color="#eb722b">
-                            Valor:{" "}
                             {(item.priceProducts * item.quantity).toLocaleString("pt-BR", {
                               style: "currency",
                               currency: "BRL",
                             })}
                           </Text>
-                        </List.Item>
-                        {index !== cart.length - 1 && (
-                          <Box
-                            borderBottom="1px solid #eb722b"
-                            my={2}
-                            w="100%"
-                          />
-                        )}
-                      </Box>
+                        </HStack>
+                      </ListItem>
                     ))}
                   </List.Root>
-                  <Box mt={4} textAlign="right">
-                    <Text fontWeight="bold" fontSize="lg" color="#eb722b">
-                      Total:{" "}
+                  <HStack 
+                    justifyContent="space-between" 
+                    mt={4} // Margem superior para separar da lista
+                    pt={4} // Padding superior
+                    borderTopWidth="1px" // Borda superior para separar do total
+                    borderColor="gray.200"
+                  >
+                    <Text fontWeight="bold" fontSize="lg" color="gray.700">
+                      Total:
+                    </Text>
+                    <Text fontWeight="bold" fontSize="xl" color="#eb722b">
                       {total.toLocaleString("pt-BR", {
                         style: "currency",
                         currency: "BRL",
                       })}
                     </Text>
-                  </Box>
-                </>
-
+                  </HStack>
+                </VStack>
               ) : (
-                <Text color="gray.500">Seu carrinho está vazio.</Text>
+                <Text color="gray.500" textAlign="center" py={8}>
+                  Seu carrinho está vazio.
+                </Text>
               )}
             </Dialog.Body>
-            <Dialog.Footer>
-              <Dialog.ActionTrigger asChild>
+
+            {cart && cart.length > 0 && (
+              <Dialog.Footer
+                px={6}
+                py={4}
+                borderTopWidth="1px"
+                borderColor="gray.100"
+                display="flex"
+                justifyContent="space-between"
+              >
                 <Button
                   variant="outline"
-                  borderColor="#eb722b"
-                  color="#eb722b"
-                  _hover={{ bg: "#eb722b", color: "white" }}
+                  borderColor="gray.300"
+                  color="gray.600"
+                  _hover={{ bg: "gray.100", borderColor: "gray.400" }}
                   onClick={onClearCart}
                   isDisabled={!cart || cart.length === 0}
                 >
-                  Limpar Carrinho
+                  Limpar
                 </Button>
-              </Dialog.ActionTrigger>
-              <Button
-                bg="#eb722b"
-                color="white"
-                _hover={{ bg: "#cf5f1f" }}
-                onClick={onFinishOrder}
-                isDisabled={!cart || cart.length === 0}
-              >
-                Finalizar Pedido
-              </Button>
-            </Dialog.Footer>
-            <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" color="#eb722b" />
-            </Dialog.CloseTrigger>
+                <Button
+                  bg="#eb722b"
+                  color="white"
+                  _hover={{ bg: "#cf5f1f" }}
+                  onClick={onFinishOrder}
+                  isDisabled={!cart || cart.length === 0}
+                  px={6}
+                >
+                  Finalizar Pedido
+                </Button>
+              </Dialog.Footer>
+            )}
           </Dialog.Content>
         </Dialog.Positioner>
       </Portal>

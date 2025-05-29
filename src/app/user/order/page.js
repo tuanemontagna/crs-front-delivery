@@ -180,138 +180,212 @@ export default function Order() {
   };
 
   return (
-  <Box
-    maxW="600px"
-    mx="auto"
-    mt={8}
-    p={4}
-    bg="white"
-    borderRadius="md"
-    boxShadow="md"
-    border="2px solid #eb722b"
-  >
-    <Heading size="lg" mb={4} color="#eb722b">
-      Finalizar Pedido
-    </Heading>
+    <VStack
+      spacing={6}
+      align="stretch"
+      py={8}
+      px={{ base: 4, md: 8 }}
+      w="100%" 
+      bg="gray.100" 
+    >
+      <VStack 
+        spacing={6}
+        align="stretch"
+        w="100%"
+        maxW={{ base: "100%", md: "70%", lg: "60%" }} 
+        mx="auto"
+      >
+        <Heading
+          as="h1"
+          size="xl"
+          mb={6}
+          color="#eb722b"
+          textAlign="center"
+          fontWeight="bold"
+        >
+          Finalizar Seu Pedido
+        </Heading>
 
-    {/* Itens do pedido */}
-    <Text fontWeight="bold" mb={2} color="#eb722b">
-      Itens do Pedido:
-    </Text>
-    <VStack align="stretch" spacing={2} mb={4}>
-      {user?.cart?.length > 0 ? user.cart.map(item => (
-        <Box
-          key={item.idProduct}
-          p={2}
-          borderWidth="2px"
-          borderColor="#eb722b"
+        {/* Seção: Itens do Pedido */}
+        <VStack
+          spacing={4}
+          align="stretch"
+          p={6}
+          bg="white"
           borderRadius="md"
+          boxShadow="sm"
         >
-          <Text color="#eb722b">{item.name} x {item.quantity}</Text>
-          <Text color="#eb722b" fontSize="sm">
-            {(item.priceProducts * item.quantity).toLocaleString("pt-BR", {
-              style: "currency",
-              currency: "BRL",
-            })}
-          </Text>
-        </Box>
-      )) : <Text color="gray.500">Nenhum item no pedido.</Text>}
-    </VStack>
+          <Heading as="h2" size="lg" color="#eb722b" borderBottomWidth="2px" borderColor="gray.100" pb={2} mb={2}>
+            Itens no Carrinho
+          </Heading>
+          {user?.cart?.length > 0 ? (
+            user.cart.map((item) => (
+              <HStack
+                key={item.idProduct}
+                p={3}
+                borderWidth="1px"
+                borderColor="gray.100"
+                borderRadius="md"
+                justifyContent="space-between"
+                _hover={{ bg: "gray.50" }}
+              >
+                <Box>
+                  <Text color="gray.700" fontWeight="medium">
+                    {item.name} <Text as="span" color="gray.500" fontSize="sm">x {item.quantity}</Text>
+                  </Text>
+                </Box>
+                <Text color="#eb722b" fontWeight="semibold" fontSize="md">
+                  {(item.priceProducts * item.quantity).toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </Text>
+              </HStack>
+            ))
+          ) : (
+            <Text color="gray.500" textAlign="center" py={4}>
+              Seu carrinho está vazio.
+            </Text>
+          )}
+        </VStack>
 
-    <Box mt={2} mb={2} textAlign="right">
-    <Text fontWeight="bold" color="#eb722b">
-        Total: {total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-    </Text>
-    {totalComDesconto > 0 && (
-        <Text fontWeight="bold" color="#eb722b">
-        Total com desconto: {totalComDesconto.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
-        </Text>
-    )}
-    </Box>
-
-    <Box borderBottom="2px solid" borderColor="#eb722b" my={4} />
-
-    {/* Cupom */}
-    <Text fontWeight="bold" mb={1} color="#eb722b">
-      Cupom:
-    </Text>
-    <HStack mb={4}>
-      <Input
-        placeholder="Digite o código do cupom"
-        value={cupom}
-        onChange={e => setCupom(e.target.value)}
-        borderColor="#eb722b"
-        color="#eb722b"
-      />
-      <Button
-        bg="#eb722b"
-        color="white"
-        _hover={{ bg: "#cf5f1f" }}
-        onClick={aplicarCupom}
+        {/* Seção: Resumo Financeiro */}
+        <VStack
+          spacing={4}
+          align="stretch"
+          p={6}
+          bg="white"
+          borderRadius="md"
+          boxShadow="sm"
         >
-        Aplicar
-      </Button>
-    </HStack>
-    
-    {/* Endereço */}
-    <Text fontWeight="bold" mb={1} color="#eb722b">
-      Endereço de Entrega:
-    </Text>
-    {enderecos.length === 0 ? (
-      <Box mb={4}>
-        <Text color="#cf5f1f" mb={2}>Nenhum endereço cadastrado.</Text>
+          <Heading as="h2" size="lg" color="#eb722b" borderBottomWidth="2px" borderColor="gray.100" pb={2} mb={2}>
+            Cupom
+          </Heading>
+          <HStack>
+            <Input
+              placeholder="Código do cupom"
+              value={cupom}
+              onChange={(e) => setCupom(e.target.value)}
+              borderColor="gray.300"
+              color="gray.700"
+              _hover={{ borderColor: "gray.400" }}
+              focusBorderColor="#eb722b"
+              size="md"
+            />
+            <Button
+              bg="#eb722b"
+              color="white"
+              _hover={{ bg: "#cf5f1f" }}
+              onClick={aplicarCupom}
+              px={8}
+              size="md"
+            >
+              Aplicar
+            </Button>
+          </HStack>
+          <VStack
+            align="stretch"
+            spacing={2}
+            p={4}
+            borderWidth="1px"
+            borderColor="gray.100"
+            borderRadius="md"
+            bg="gray.50"
+          >
+            <HStack justifyContent="space-between">
+              <Text fontWeight="medium" color="gray.600">Subtotal:</Text>
+              <Text fontWeight="semibold" color="gray.700" fontSize="md">
+                {total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </Text>
+            </HStack>
+            {totalComDesconto > 0 && totalComDesconto < total && (
+              <HStack justifyContent="space-between">
+                <Text fontWeight="medium" color="green.600">Desconto (Cupom):</Text>
+                <Text fontWeight="semibold" color="green.600" fontSize="md">
+                  - {(total - totalComDesconto).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+                </Text>
+              </HStack>
+            )}
+            <HStack justifyContent="space-between" pt={2} borderTopWidth="1px" borderColor="gray.200" mt={2}>
+              <Text fontWeight="bold" fontSize="lg" color="#eb722b">Total a Pagar:</Text>
+              <Text fontWeight="bold" fontSize="xl" color="#eb722b">
+                {(totalComDesconto > 0 && totalComDesconto < total ? totalComDesconto : total).toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+              </Text>
+            </HStack>
+          </VStack>
+        </VStack>
+
+        {/* Seção: Entrega e Pagamento */}
+        <VStack
+          spacing={5}
+          align="stretch"
+          p={6}
+          bg="white"
+          borderRadius="md"
+          boxShadow="sm"
+        >
+          <Heading as="h2" size="lg" color="#eb722b" borderBottomWidth="2px" borderColor="gray.100" pb={2} mb={2}>
+            Detalhes da Entrega e Pagamento
+          </Heading>
+          {/* Endereço */}
+          {enderecos.length === 0 ? (
+            <VStack align="flex-start" p={4} borderWidth="1px" borderColor="orange.200" borderRadius="md" bg="orange.50">
+              <Text color="#cf5f1f" fontWeight="medium" mb={1}>Nenhum endereço cadastrado.</Text>
+              <Text color="gray.600" fontSize="sm" mb={2}>Por favor, cadastre um endereço para continuar.</Text>
+              <Button
+                colorScheme="orange"
+                variant="outline"
+                borderColor="#eb722b"
+                color="#eb722b"
+                _hover={{ bg: "orange.50" }}
+                onClick={() => router.push('/user/adress')}
+                size="sm"
+              >
+                Cadastrar Endereço
+              </Button>
+            </VStack>
+          ) : (
+            <SelectAdress
+              label="Endereço de Entrega"
+              placeholder="Selecione o endereço"
+              items={enderecos.map((end) => ({
+                label: `${end.street}, ${end.numberForget} - ${end.district}, ${end.city} - ${end.state}`,
+                value: end.id.toString(),
+              }))}
+              value={enderecoSelecionado}
+              onChange={setEnderecoSelecionado}
+            />
+          )}
+
+          {/* Pagamento */}
+          <SelectPayment
+            label="Forma de Pagamento"
+            placeholder="Selecione a forma de pagamento"
+            items={pagamentos.map((pag) => ({
+              label: pag.name,
+              value: pag.id.toString(),
+            }))}
+            value={pagamentoSelecionado}
+            onChange={setPagamentoSelecionado}
+          />
+        </VStack>
+
         <Button
           color="white"
           bg="#eb722b"
           _hover={{ bg: "#cf5f1f" }}
-          onClick={() => {
-
-            window.location.href = '/user/adress';
-          }}
+          size="lg"
+          w="full"
+          mt={4}
+          py={6}
+          fontSize="lg"
+          onClick={confirmarPedido}
+          boxShadow="md"
+          isDisabled={!enderecoSelecionado || !pagamentoSelecionado || user?.cart?.length === 0}
         >
-          Cadastrar Endereço
+          Confirmar Pedido
         </Button>
-      </Box>
-    ) : (
-      <SelectAdress
-        label="Selecione o Endereço"
-        placeholder="Escolha o endereço de entrega"
-        items={enderecos.map((end) => ({
-          label: `${end.street}, ${end.numberForget} - ${end.district}`,
-          value: end.id.toString(),
-        }))}
-        value={enderecoSelecionado}
-        onChange={setEnderecoSelecionado}
-        borderColor="#eb722b"
-        color="#eb722b"
-      />
-    )}
-
-    {/* Pagamento */}
-    <SelectPayment
-        label="Selecione o Pagamento"
-        placeholder="Escolha o método de pagamento"
-        items={pagamentos.map((pag) => ({
-            label: pag.name, 
-            value: pag.id.toString(),
-        }))}
-        value={pagamentoSelecionado}
-        onChange={setPagamentoSelecionado}
-        borderColor="#eb722b"
-        color="#eb722b"
-    />
-
-    <Button
-      color="white"
-      bg="#eb722b"
-      _hover={{ bg: "#cf5f1f" }}
-      size="lg"
-      w="100%"
-      mt={6}
-      onClick={confirmarPedido}
-    >
-      Confirmar Pedido
-    </Button>
-  </Box>
-);
+      </VStack>
+    </VStack>
+  );
 }

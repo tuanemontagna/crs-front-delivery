@@ -6,10 +6,10 @@ import {
   Heading,
   HStack,
 } from "@chakra-ui/react";
-import CategoryCarrossel from "@/components/homePage/CategoryCarrossel.jsx"
-import ProductGradeAdmin from "@/components/admin/ProductGradeAdmin.jsx"
-import SearchBar from "@/components/homePage/SearchBar.jsx"
-import EmptyState from "@/components/homePage/EmptyState.jsx"
+import CategoryCarrossel from "@/components/homePage/CategoryCarrossel.jsx";
+import ProductGradeAdmin from "@/components/admin/ProductGradeAdmin.jsx";
+import SearchBar from "@/components/homePage/SearchBar.jsx";
+import EmptyState from "@/components/homePage/EmptyState.jsx";
 import { toaster } from "@/components/ui/toaster";
 import AdminMenu from "@/components/admin/AdminMenu.jsx";
 import { useRouter } from "next/navigation";
@@ -95,7 +95,7 @@ useEffect(() => {
 
  return (
       <Box bg="gray.50" minH="100vh" py={0}>
-      <Box w="100%" h={{ base: "120px", md: "180px" }} bg="#eb722b" position="relative" mb={4}>
+      <Box w="100%" h={{ base: "80px", md: "100px" }} bg="#eb722b" position="relative" mb={4}>
         <Box position="absolute" top="16px" right="24px">
           <HStack spacing={3}>
             <AdminMenu />

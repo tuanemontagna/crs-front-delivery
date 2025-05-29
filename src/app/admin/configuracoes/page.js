@@ -19,8 +19,8 @@ export default function ConfiguracoesPage() {
 
   const settingsOptions = [
     { label: "Usuários", icon: FiUser, path: "/admin/user" },
-    { label: "Pedidos", icon: FiShield, path: "/admin/order" },
-    { label: "Histórico de Pedidos", icon: FiBell, path: "/admin/order-product" },
+    { label: "Pedidos", icon: FiShield, path: "/admin/order" }, //falta
+    { label: "Histórico de Pedidos", icon: FiBell, path: "/admin/order-product" }, //falta
     { label: "Pagamentos", icon: FiCreditCard, path: "/admin/payment" },
     { label: "Produtos", icon: FiBox, path: "/admin/product" },
     { label: "Categorias", icon: FiTool, path: "/admin/categories" },
