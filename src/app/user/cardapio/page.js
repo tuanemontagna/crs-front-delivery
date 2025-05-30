@@ -149,22 +149,22 @@ useEffect(() => {
 }, [selectedCategoryId, search]);
 
 useEffect(() => {
-        const initializePage = async () => {
-            const isValidToken = await InfoToken();
-            if (!isValidToken) {
-                toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
-                router.push('/login');
-                setIsLoadingPage(false);
-                return;
-            } else {
-                console.error("Error getting user ID:", error);
-                setPageError("Error identifying user.");
-                toaster.create({ description: 'Error identifying user.', type: 'error' });
-                setIsLoadingPage(false);
-            }
-        };
-        initializePage();
-    }, [router]);
+  const initializePage = async () => {
+      const isValidToken = await InfoToken();
+      if (!isValidToken) {
+          toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
+          router.push('/login');
+          setIsLoadingPage(false);
+          return;
+      } else {
+          console.error("Error getting user ID:", error);
+          setPageError("Error identifying user.");
+          toaster.create({ description: 'Error identifying user.', type: 'error' });
+          setIsLoadingPage(false);
+      }
+  };
+  initializePage();
+}, [router]);
 
  return (
       <Box bg="gray.50" minH="100vh" py={0}>

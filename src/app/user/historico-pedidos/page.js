@@ -8,17 +8,13 @@ import {
   VStack,
   Spinner,
   Card,
-  CardHeader,
-  CardBody,
   Badge,
   HStack,
 } from '@chakra-ui/react';
 import api from '@/utils/axios'; 
 import { toaster } from '@/components/ui/toaster'; 
 
-// Function to format date (optional, adjust as needed)
 const formatDate = (dateString) => {
-// ...existing code...
   if (!dateString) return 'Data não disponível';
   try {
     return new Date(dateString).toLocaleDateString('pt-BR', {
@@ -29,83 +25,92 @@ const formatDate = (dateString) => {
       minute: '2-digit',
     });
   } catch (error) {
-    return dateString; // Return original if formatting fails
+    return dateString;
   }
 };
 
 export default function HistoricoPedidosPage() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState(null); 
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
-// ...existing code...
-    const currentUserId = 2; 
-    setUserId(currentUserId);
+    const carregarUsuario = async () => {
+      try {
+        const idUser = await InfoToken();
+        if (idUser) {
+          setUserId(idUser);
+          fetchOrders(idUser);
+        } else {
+          setLoading(false);
+          toaster.create({
+            title: 'Usuário não identificado',
+            description: 'Não foi possível buscar o histórico de pedidos.',
+            type: 'error',
+          });
+        }
+      } catch (error) {
+        setLoading(false);
+        toaster.create({
+          title: 'Erro ao obter informações do usuário',
+          description: 'Por favor, faça login novamente.',
+          type: 'error',
+        });
+      }
+    };
 
-    if (currentUserId) {
-      fetchOrders(currentUserId);
-    } else {
-      setLoading(false);
-      toaster.create({
-        title: 'Usuário não identificado',
-        description: 'Não foi possível buscar o histórico de pedidos.',
-        type: 'error',
-      });
-    }
+    carregarUsuario();
   }, []);
 
-const fetchOrders = async (idUserCustomer) => {
-  setLoading(true);
-  try {
-    const response = await api.get(`/order/historico-pedidos/${idUserCustomer}`);
-    const data = Array.isArray(response.data.data) ? response.data.data : [];
+  const fetchOrders = async (idUserCustomer) => {
+    setLoading(true);
+    try {
+      const response = await api.get(`/order/historico-pedidos/${idUserCustomer}`);
+      const data = Array.isArray(response.data.data) ? response.data.data : [];
 
-    const groupedOrders = data.reduce((acc, item) => {
-      const orderId = item.order_id;
-      if (!acc[orderId]) {
-        acc[orderId] = {
-          id: orderId,
-          status: item.status,
-          total: item.total,
-          createdAt: item.order_created_at,
-          orderProducts: [],
-        };
-      }
-      acc[orderId].orderProducts.push({
-        id: item.order_product_id,
-        product: {
-          id: item.product_id,
-          name: item.product_name,
-          description: item.product_description,
-          image: item.product_image,
-          price: parseFloat(item.product_price),
-        },
-        quantity: item.quantity,
-        price: parseFloat(item.price_products),
-      });
-      return acc;
-    }, {});
+      const groupedOrders = data.reduce((acc, item) => {
+        const orderId = item.order_id;
+        if (!acc[orderId]) {
+          acc[orderId] = {
+            id: orderId,
+            status: item.status,
+            total: item.total,
+            createdAt: item.order_created_at,
+            orderProducts: [],
+          };
+        }
+        acc[orderId].orderProducts.push({
+          id: item.order_product_id,
+          product: {
+            id: item.product_id,
+            name: item.product_name,
+            description: item.product_description,
+            image: item.product_image,
+            price: parseFloat(item.product_price),
+          },
+          quantity: item.quantity,
+          price: parseFloat(item.price_products),
+        });
+        return acc;
+      }, {});
 
-    const ordersArray = Object.values(groupedOrders).sort(
+      const ordersArray = Object.values(groupedOrders).sort(
         (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
+      );
 
-        setOrders(ordersArray);
+      setOrders(ordersArray);
     } catch (error) {
-        console.error("Erro ao buscar pedidos:", error);
-        toaster.create({
+      console.error("Erro ao buscar pedidos:", error);
+      toaster.create({
         title: 'Erro ao buscar pedidos',
         description: error.response?.data?.message || 'Não foi possível carregar o histórico.',
         type: 'error',
-        });
-        setOrders([]);
+      });
+      setOrders([]);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-    };
-
-
+  };
 
   if (loading) {
     return (

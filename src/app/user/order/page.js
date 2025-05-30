@@ -30,8 +30,7 @@ export default function Order() {
 
     const buscarUser = async () => {
         try {
-            //const idUser = await InfoToken();
-            const idUser = 2;
+            const idUser = await InfoToken();
             console.log("ID do usuário retornado por InfoToken:", idUser);
             const response = await api.get(`/user/${idUser}`);
             setUser(response.data.data);
@@ -47,8 +46,7 @@ export default function Order() {
 
     const buscarAdress = async () => {
       try {
-          //const idUser = await InfoToken();
-          const idUser = 2;
+          const idUser = await InfoToken();
           console.log("ID do usuário retornado por InfoToken:", idUser);
           const response = await api.get(`/adress`);
           const enderecosUsuario = response.data.data.filter(end => end.idUser === idUser);
@@ -95,6 +93,24 @@ export default function Order() {
     buscarPayments();
     buscarCupons();
   }, []);
+
+  useEffect(() => {
+    const initializePage = async () => {
+        const isValidToken = await InfoToken();
+        if (!isValidToken) {
+            toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
+            router.push('/login');
+            setIsLoadingPage(false);
+            return;
+        } else {
+            console.error("Error getting user ID:", error);
+            setPageError("Error identifying user.");
+            toaster.create({ description: 'Error identifying user.', type: 'error' });
+            setIsLoadingPage(false);
+        }
+    };
+    initializePage();
+  }, [router]);
 
   useEffect(() => {
     if (user?.cart) {

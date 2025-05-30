@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Box, Stack, Text, Button} from "@chakra-ui/react";
-import { MdMode, MdDelete } from "react-icons/md";
 import EditarAdressDialog from "./EditarAdressDialog";
 import { Tooltip } from "@/components/ui/tooltip"
 

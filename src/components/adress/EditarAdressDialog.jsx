@@ -40,7 +40,7 @@ export default function EditarAdressDialog({ endereco, onUpdate }) {
                     size="sm"
                     borderColor="#eb722b"
                     color="#eb722b"
-                    _hover={{ bg: "#eb722b", color: "white" }}
+                    _hover={{ bg: "orange.50", color: "#d15e1d", borderColor: "#d15e1d" }}
                 >
                     Editar
                 </Button>
@@ -48,47 +48,84 @@ export default function EditarAdressDialog({ endereco, onUpdate }) {
 
             <Dialog.Backdrop />
             <Dialog.Positioner>
-                <Dialog.Content bg="white" border="2px solid #eb722b">
+                <Dialog.Content
+                    bg="white"
+                    border="1px solid"
+                    borderColor="gray.200"
+                    borderRadius="xl"
+                    boxShadow="lg"
+                    maxW="md"
+                    width="90%"
+                >
                     <Dialog.Header>
-                        <Dialog.Title color="#eb722b" fontWeight="bold">
-                            Editando Endereço
+                        <Dialog.Title color="#eb722b" fontWeight="semibold" fontSize="xl">
+                            Editar Endereço
                         </Dialog.Title>
-                        <CloseButton 
-                            size="sm" 
-                            onClick={() => setIsOpen(false)} 
-                            position="absolute" 
-                            top="1rem" 
-                            right="1rem" 
-                            color="#eb722b"
-                        />
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton
+                                size="md"
+                                position="absolute"
+                                right="12px"
+                                top="12px"
+                                borderRadius="md"
+                                _hover={{ bg: "gray.100" }}
+                            />
+                        </Dialog.CloseTrigger>
                     </Dialog.Header>
 
-                    <Dialog.Body display="flex" flexDirection="column" gap={3}>
-                        {["state", "city", "district", "street", "numberForget", "zipCode"].map((field) => (
-                            <div key={field}>
-                                <Text color="#eb722b" fontWeight="medium">{field.toUpperCase()}</Text>
+                    <Dialog.Body display="flex" flexDirection="column" gap={4} p={6}>
+                        {[
+                            { name: 'zipCode', label: 'CEP' },
+                            { name: 'street', label: 'Rua' },
+                            { name: 'numberForget', label: 'Número' },
+                            { name: 'district', label: 'Bairro' },
+                            { name: 'city', label: 'Cidade' },
+                            { name: 'state', label: 'Estado' },
+                        ].map((field) => (
+                            <div key={field.name}>
+                                <Text color="gray.700" fontWeight="medium" mb={1.5}>
+                                    {field.label}
+                                </Text>
                                 <Input
-                                    name={field}
-                                    value={formData[field] || ''}
+                                    name={field.name}
+                                    value={formData[field.name] || ''}
                                     onChange={handleChange}
                                     focusBorderColor="#eb722b"
-                                    borderColor="#eb722b"
-                                    color="#eb722b"
-                                    placeholder={`Digite ${field}`}
-                                    _placeholder={{ color: "#eb722b" }}
+                                    borderColor="gray.300"
+                                    color="gray.800"
+                                    placeholder={`Digite ${field.label.toLowerCase()}`}
+                                    size="md"
+                                    borderRadius="md"
                                 />
                             </div>
                         ))}
                     </Dialog.Body>
 
-                    <Dialog.Footer display="flex" gap={2}>
+                    <Dialog.Footer
+                        display="flex"
+                        gap={3}
+                        p={4}
+                        borderTop="1px solid"
+                        borderColor="gray.100"
+                    >
+                        <Button
+                            variant="outline"
+                            borderColor="gray.300"
+                            color="gray.700"
+                            _hover={{ bg: 'gray.100' }}
+                            size="md"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Cancelar
+                        </Button>
                         <Button
                             bg="#eb722b"
                             color="white"
-                            _hover={{ bg: "#d15e1d" }}
+                            _hover={{ bg: '#d15e1d' }}
                             onClick={handleSalvar}
+                            size="md"
                         >
-                            Salvar
+                            Salvar Alterações
                         </Button>
                     </Dialog.Footer>
                 </Dialog.Content>

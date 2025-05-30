@@ -56,11 +56,10 @@ export default function CreateAdressDialog({ onCreate }) {
         <Dialog.Root>
             <Dialog.Trigger asChild>
                 <Button
-                    variant="outline"
-                    size="sm"
-                    borderColor="#eb722b"
-                    color="#eb722b"
-                    _hover={{ bg: '#eb722b', color: 'white' }}
+                    bg="#eb722b"
+                    color="white"
+                    size="md"
+                    _hover={{ bg: '#d15e1d' }}
                 >
                     Adicionar Endereço
                 </Button>
@@ -68,60 +67,89 @@ export default function CreateAdressDialog({ onCreate }) {
 
             <Dialog.Backdrop />
             <Dialog.Positioner>
-                <Dialog.Content bg="white" border="2px solid #eb722b">
+                <Dialog.Content 
+                    bg="white" 
+                    border="1px solid" 
+                    borderColor="gray.200" 
+                    borderRadius="xl" 
+                    boxShadow="lg"
+                    maxW="md" 
+                    width="90%" 
+                >
                     <Dialog.Header>
-                        <Dialog.Title color="#eb722b" fontWeight="bold">
-                            Criar Endereço
+                        <Dialog.Title color="#eb722b" fontWeight="semibold" fontSize="xl"> {/* Adjusted title style */}
+                            Criar Novo Endereço
                         </Dialog.Title>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton 
+                                size="md" 
+                                position="absolute" 
+                                right="12px" 
+                                top="12px" 
+                                borderRadius="md"
+                                _hover={{ bg: "gray.100" }}
+                            />
+                        </Dialog.CloseTrigger>
                     </Dialog.Header>
 
-                    <Dialog.Body display="flex" flexDirection="column" gap={3}>
-                        {['state', 'city', 'district', 'street', 'numberForget', 'zipCode'].map((field) => (
-                            <div key={field}>
-                                <Text color="#eb722b" fontWeight="medium">
-                                    {field === 'state' && 'Estado'}
-                                    {field === 'city' && 'Cidade'}
-                                    {field === 'district' && 'Bairro'}
-                                    {field === 'street' && 'Rua'}
-                                    {field === 'numberForget' && 'Número'}
-                                    {field === 'zipCode' && 'CEP'}
+                    <Dialog.Body display="flex" flexDirection="column" gap={4} p={6}> {/* Consistent padding and gap */}
+                        {[
+                            { name: 'zipCode', label: 'CEP', placeholder: 'Digite o CEP' },
+                            { name: 'street', label: 'Rua', placeholder: 'Digite a rua' },
+                            { name: 'numberForget', label: 'Número', placeholder: 'Digite o número' },
+                            { name: 'district', label: 'Bairro', placeholder: 'Digite o bairro' },
+                            { name: 'city', label: 'Cidade', placeholder: 'Digite a cidade' },
+                            { name: 'state', label: 'Estado', placeholder: 'Digite o estado' },
+                        ].map((field) => (
+                            <div key={field.name}>
+                                <Text color="gray.700" fontWeight="medium" mb={1.5}> {/* Label styling */}
+                                    {field.label}
                                 </Text>
                                 <Input
-                                    name={field}
-                                    value={formData[field]}
+                                    name={field.name}
+                                    value={formData[field.name]}
                                     onChange={handleChange}
                                     focusBorderColor="#eb722b"
-                                    color="#eb722b"
-                                    placeholder={`Digite ${field === 'numberForget' ? 'o número' : field}`}
+                                    borderColor="gray.300"
+                                    color="gray.800"
+                                    placeholder={field.placeholder}
+                                    size="md"
+                                    borderRadius="md" // Consistent border radius for inputs
                                 />
                             </div>
                         ))}
                     </Dialog.Body>
 
-                    <Dialog.Footer display="flex" gap={2}>
-                        <Dialog.ActionTrigger asChild>
-                            <Button
-                                variant="outline"
-                                borderColor="#eb722b"
-                                color="#eb722b"
-                                _hover={{ bg: '#eb722b', color: 'white' }}
-                            >
-                                Cancelar
-                            </Button>
-                        </Dialog.ActionTrigger>
+                    <Dialog.Footer 
+                        display="flex" 
+                        gap={3} 
+                        p={4} 
+                        borderTop="1px solid" 
+                        borderColor="gray.100" // Softer border top
+                    >
+                        <Button // Changed from Dialog.ActionTrigger for direct styling control
+                            variant="outline"
+                            borderColor="gray.300"
+                            color="gray.700"
+                            _hover={{ bg: 'gray.100' }}
+                            size="md"
+                            onClick={() => {
+                                const closeButton = document.querySelector('[id^="dialog-"][id$="-close-trigger"]');
+                                if (closeButton) closeButton.click();
+                            }}
+                        >
+                            Cancelar
+                        </Button>
                         <Button
                             bg="#eb722b"
                             color="white"
                             _hover={{ bg: '#d15e1d' }}
                             onClick={handleSalvar}
+                            size="md"
                         >
-                            Salvar
+                            Salvar Endereço
                         </Button>
                     </Dialog.Footer>
-
-                    <Dialog.CloseTrigger asChild>
-                        <CloseButton size="sm" />
-                    </Dialog.CloseTrigger>
                 </Dialog.Content>
             </Dialog.Positioner>
         </Dialog.Root>

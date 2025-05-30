@@ -2,7 +2,7 @@
 import { Box, Flex, VStack, Image, Heading, Text, useBreakpointValue } from "@chakra-ui/react";
 import React from 'react';
 import LoginInput from "@/components/LoginInput";
-import { Toaster } from "@/components/ui/toaster";
+import { toaster, Toaster } from "@/components/ui/toaster";
 import axios from "@/utils/axios";
 import { useRouter } from 'next/navigation';
 
@@ -12,19 +12,40 @@ export default function Login() {
   const loginUsuario = async (content) => {
     try {
       const response = await axios.post(`/user/login`, { ...content });
+
       if (response.status === 200) {
         toaster.create({
           description: "Login realizado com sucesso! Redirecionando...",
           type: "success",
         });
-        localStorage.setItem('token', response.data.response);
-        router.push('/cargo');
+        const token = response.data.response;
+        localStorage.setItem('token', token);
+        const decoded = jwtDecode(token);
+        const idUser = decoded.id; 
+        const userResponse = await axios.get(`/user/${idUser}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const user = userResponse.data.data;
+
+        if (user.role === 'customer') {
+          router.push('/user/cardapio');
+        } else if (user.role === 'admin') {
+          router.push('/admin/home');
+        } else {
+          toaster.create({
+            description: "Permissão não reconhecida!",
+            type: "error",
+          });
+        }
+
       } else {
         toaster.create({
           description: "Erro ao fazer login!",
           type: "error",
         });
       }
+
     } catch (error) {
       toaster.create({
         description: "Erro ao conectar com o servidor!",
