@@ -85,21 +85,27 @@ export default function Adress() {
     };
 
     useEffect(() => {
-        const initializePage = async () => {
-            const isValidToken = await InfoToken();
-            if (!isValidToken) {
-                toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
-                router.push('/login');
-                setIsLoadingPage(false);
-                return;
-            } else {
-                console.error("Error getting user ID:", error);
-                setPageError("Error identifying user.");
-                toaster.create({ description: 'Error identifying user.', type: 'error' });
-                setIsLoadingPage(false);
-            }
-        };
-        initializePage();
+      const initializePage = async () => {
+        try {
+          const isValidToken = await InfoToken();
+          if (!isValidToken) {
+              toaster.create({ 
+                description: 'Session expired. Please login again.', 
+                type: 'error' 
+              });
+              router.push('/login');
+              setIsLoadingPage(false);
+              return;
+          }
+        } catch (error) {
+          toaster.create({
+                description: 'Error identifying user.', 
+                type: 'error' 
+              });
+              setIsLoadingPage(false);
+        }
+      };
+      initializePage();
     }, [router]);
 
     return (

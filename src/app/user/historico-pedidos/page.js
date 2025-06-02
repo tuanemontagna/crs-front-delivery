@@ -13,6 +13,7 @@ import {
 } from '@chakra-ui/react';
 import api from '@/utils/axios'; 
 import { toaster } from '@/components/ui/toaster'; 
+import InfoToken from '@/components/InfoToken.js';
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Data não disponível';
@@ -34,37 +35,10 @@ export default function HistoricoPedidosPage() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
-  useEffect(() => {
-    const carregarUsuario = async () => {
-      try {
-        const idUser = await InfoToken();
-        if (idUser) {
-          setUserId(idUser);
-          fetchOrders(idUser);
-        } else {
-          setLoading(false);
-          toaster.create({
-            title: 'Usuário não identificado',
-            description: 'Não foi possível buscar o histórico de pedidos.',
-            type: 'error',
-          });
-        }
-      } catch (error) {
-        setLoading(false);
-        toaster.create({
-          title: 'Erro ao obter informações do usuário',
-          description: 'Por favor, faça login novamente.',
-          type: 'error',
-        });
-      }
-    };
-
-    carregarUsuario();
-  }, []);
-
-  const fetchOrders = async (idUserCustomer) => {
+  const fetchOrders = async () => {
     setLoading(true);
     try {
+      const idUserCustomer = await InfoToken();
       const response = await api.get(`/order/historico-pedidos/${idUserCustomer}`);
       const data = Array.isArray(response.data.data) ? response.data.data : [];
 
@@ -111,6 +85,35 @@ export default function HistoricoPedidosPage() {
       setLoading(false);
     }
   };
+
+  const carregarUsuario = async () => {
+    try {
+      const idUser = await InfoToken();
+      if (idUser) {
+        setUserId(idUser);
+      } else {
+        setLoading(false);
+        toaster.create({
+          title: 'Usuário não identificado',
+          description: 'Não foi possível buscar o histórico de pedidos.',
+          type: 'error',
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      toaster.create({
+        title: 'Erro ao obter informações do usuário',
+        description: 'Por favor, faça login novamente.',
+        type: 'error',
+      });
+    }
+  };
+
+  useEffect(() => {
+    carregarUsuario();
+    fetchOrders();
+  }, []);
+
 
   if (loading) {
     return (

@@ -7,7 +7,7 @@ import axios from "@/utils/axios";
 import { useRouter } from 'next/navigation';
 
 export default function Login() {
-  const router = useRouter();
+const router = useRouter();
 
   const loginUsuario = async (content) => {
     try {
@@ -19,26 +19,15 @@ export default function Login() {
           type: "success",
         });
         const token = response.data.response;
+        const idUser = response.data.id || response.data.userId; 
         localStorage.setItem('token', token);
-        const decoded = jwtDecode(token);
-        const idUser = decoded.id; 
+
         const userResponse = await axios.get(`/user/${idUser}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
 
         const user = userResponse.data.data;
-
-        if (user.role === 'customer') {
-          router.push('/user/cardapio');
-        } else if (user.role === 'admin') {
-          router.push('/admin/home');
-        } else {
-          toaster.create({
-            description: "Permissão não reconhecida!",
-            type: "error",
-          });
-        }
-
+        router.push('/user/cardapio');
       } else {
         toaster.create({
           description: "Erro ao fazer login!",
@@ -47,6 +36,7 @@ export default function Login() {
       }
 
     } catch (error) {
+      console.log(error);
       toaster.create({
         description: "Erro ao conectar com o servidor!",
         type: "error",

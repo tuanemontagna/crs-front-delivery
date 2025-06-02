@@ -87,7 +87,9 @@ const buscarUser = async () => {
 
 const atualizarCarrinho = async (novoCarrinho) => {
   try {
-    const response = await api.patch(`/user/2`, { cart: novoCarrinho });
+    const idUser = await InfoToken();
+    console.log("ID do usuário retornado por InfoToken:", idUser);
+    const response = await api.patch(`/user/${idUser}`, { cart: novoCarrinho });
     setUser(response.data.data);
   } catch (error) {
     console.log(error);
@@ -121,6 +123,7 @@ const handleAddToCart = (product) => {
     ];
   }
   atualizarCarrinho(novoCarrinho);
+  console.log(novoCarrinho);
   toaster.create({
     title: 'Produto adicionado ao carrinho!',
     type: 'success'
@@ -150,18 +153,24 @@ useEffect(() => {
 
 useEffect(() => {
   const initializePage = async () => {
+    try {
       const isValidToken = await InfoToken();
       if (!isValidToken) {
-          toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
+          toaster.create({ 
+            description: 'Session expired. Please login again.', 
+            type: 'error' 
+          });
           router.push('/login');
           setIsLoadingPage(false);
           return;
-      } else {
-          console.error("Error getting user ID:", error);
-          setPageError("Error identifying user.");
-          toaster.create({ description: 'Error identifying user.', type: 'error' });
-          setIsLoadingPage(false);
       }
+    } catch (error) {
+      toaster.create({
+            description: 'Error identifying user.', 
+            type: 'error' 
+          });
+          setIsLoadingPage(false);
+    }
   };
   initializePage();
 }, [router]);

@@ -10,10 +10,11 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import api from "@/utils/axios.js";
-import { toaster } from "@/components/ui/toaster"
+import { toaster } from "@/components/ui/toaster.jsx";
 import SelectPayment from "@/components/order/SelectPayment.jsx";
 import SelectAdress from "@/components/order/SelectAdress.jsx";
 import { useRouter } from 'next/navigation';
+import InfoToken from "@/components/InfoToken.js";
 
 export default function Order() {
   const [user, setUser] = useState(null);
@@ -96,18 +97,24 @@ export default function Order() {
 
   useEffect(() => {
     const initializePage = async () => {
+      try {
         const isValidToken = await InfoToken();
         if (!isValidToken) {
-            toaster.create({ description: 'Session expired. Please login again.', type: 'error' });
+            toaster.create({ 
+              description: 'Session expired. Please login again.', 
+              type: 'error' 
+            });
             router.push('/login');
             setIsLoadingPage(false);
             return;
-        } else {
-            console.error("Error getting user ID:", error);
-            setPageError("Error identifying user.");
-            toaster.create({ description: 'Error identifying user.', type: 'error' });
-            setIsLoadingPage(false);
         }
+      } catch (error) {
+        toaster.create({
+              description: 'Error identifying user.', 
+              type: 'error' 
+            });
+            setIsLoadingPage(false);
+      }
     };
     initializePage();
   }, [router]);
